@@ -1,0 +1,433 @@
+{% extends "base.html" %}
+{% block title %}The Complete Look — StyleAI Studio{% endblock %}
+{% block module_name %}complete{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <div class="eyebrow">All-in-One / Guided Wizard</div>
+    <h1>The Complete Look.</h1>
+  </div>
+  <span class="pill pill-lime">Chained Multi-AI</span>
+</div>
+
+<div class="page-body">
+  <div class="grid-layout">
+
+    <!-- ── Left Column: Multi-Stage Controls ─────────────────── -->
+    <div class="panel">
+      <form id="complete-form"
+            hx-post="/complete/start"
+            hx-target="#result-panel"
+            hx-swap="innerHTML"
+            hx-indicator="#result-panel"
+            enctype="multipart/form-data">
+
+        <!-- 1. Dual Visual Inputs -->
+        <div class="card mb-4">
+          <div class="eyebrow mb-2">1 / Dual Visual Inputs</div>
+          <p class="text-xs muted mb-3">
+            YouCam AI uses close-up resolution for facial styling and torso/full-body framing for realistic clothing try-on.
+          </p>
+
+          <div class="grid-2 gap-3">
+            <!-- Slot A: Face Portrait -->
+            <div class="dual-input-slot" style="background:var(--bg-cream); padding:var(--sp-3); border-radius:var(--r-md); border:1.5px solid var(--border-hairline);">
+              <div class="flex justify-between items-center mb-2">
+                <span class="text-xs font-bold">A. Face Portrait *</span>
+                <span class="pill pill-lime" style="font-size:0.65rem;">Hair & Eyes</span>
+              </div>
+              <div class="upload-zone" id="upload-zone" style="min-height:130px; padding:var(--sp-2);"
+                   onclick="document.getElementById('selfie-input').click()"
+                   ondragover="event.preventDefault();"
+                   ondrop="event.preventDefault(); handleDrop(event, 'selfie-input')">
+                <input type="file" id="selfie-input" name="selfie_file" accept="image/*" class="hidden"
+                       onchange="previewImage(this, 'upload-preview', 'upload-placeholder')" />
+                <input type="hidden" id="base64-image-input" name="base64_image" />
+
+                <div id="upload-placeholder" class="upload-placeholder {% if latest_selfie %}hidden{% endif %}">
+                  <span class="upload-icon" style="font-size:1.4rem;">👤</span>
+                  <p class="upload-text text-xs">Upload Face Selfie</p>
+                  <p class="upload-sub text-xs">Head & shoulders</p>
+                </div>
+
+                <div id="upload-preview" class="upload-preview {% if latest_selfie %}show{% endif %}">
+                  <img id="upload-preview-img" src="{{ latest_selfie.b2_url if latest_selfie else '' }}" alt="Face Portrait" style="max-height:120px; object-fit:cover; border-radius:var(--r-sm);" />
+                </div>
+              </div>
+              <div class="flex justify-between items-center mt-2">
+                <button type="button" class="btn btn-ghost-dark btn-xs" onclick="openCameraModal('complete')">
+                  📷 Camera
+                </button>
+                <button type="button" class="btn btn-ghost-dark btn-xs" onclick="document.getElementById('selfie-input').click()">
+                  📁 Browse
+                </button>
+              </div>
+            </div>
+
+            <!-- Slot B: Body Silhouette -->
+            <div class="dual-input-slot" style="background:var(--bg-cream); padding:var(--sp-3); border-radius:var(--r-md); border:1.5px solid var(--border-hairline);">
+              <div class="flex justify-between items-center mb-2">
+                <span class="text-xs font-bold">B. Body / Try-On Photo</span>
+                <span class="pill pill-terra" style="font-size:0.65rem;">Clothes VTO</span>
+              </div>
+              <div class="upload-zone" id="body-upload-zone" style="min-height:130px; padding:var(--sp-2);"
+                   onclick="document.getElementById('body-file-input').click()"
+                   ondragover="event.preventDefault();"
+                   ondrop="event.preventDefault(); handleDrop(event, 'body-file-input')">
+                <input type="file" id="body-file-input" name="body_file" accept="image/*" class="hidden"
+                       onchange="previewImage(this, 'body-upload-preview', 'body-upload-placeholder')" />
+                <input type="hidden" id="body-preset-input" name="body_preset_url" value="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=800&q=80" />
+
+                <div id="body-upload-placeholder" class="upload-placeholder hidden">
+                  <span class="upload-icon" style="font-size:1.4rem;">👗</span>
+                  <p class="upload-text text-xs">Upload Body Photo</p>
+                  <p class="upload-sub text-xs">Half or Full Body</p>
+                </div>
+
+                <div id="body-upload-preview" class="upload-preview show">
+                  <img id="body-upload-preview-img" src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=800&q=80" alt="Body Silhouette" style="max-height:120px; object-fit:cover; border-radius:var(--r-sm);" />
+                </div>
+              </div>
+              <div class="flex gap-1 justify-between items-center mt-2">
+                <button type="button" class="btn btn-ghost-dark btn-xs" onclick="setPresetBody('female', this)" style="font-size:0.7rem; padding:4px 6px;">
+                  👗 Studio F
+                </button>
+                <button type="button" class="btn btn-ghost-dark btn-xs" onclick="setPresetBody('male', this)" style="font-size:0.7rem; padding:4px 6px;">
+                  👔 Studio M
+                </button>
+                <button type="button" class="btn btn-ghost-dark btn-xs" onclick="document.getElementById('body-file-input').click()" style="font-size:0.7rem; padding:4px 6px;">
+                  📁 Custom
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. Curated Look Presets -->
+        {% if curated_looks %}
+        <div class="card mb-4">
+          <div class="eyebrow mb-2">✨ Quick-Select Curated Preset</div>
+          <div class="grid-2 gap-2">
+            {% for look in curated_looks %}
+            <div class="card look-preset-card"
+                 onclick="applyCuratedLook('{{ look.hair_color }}', '{{ look.lens_asset.b2_url if look.lens_asset else '' }}', '{{ look.garment_asset.b2_url if look.garment_asset else '' }}', this)"
+                 style="cursor:pointer; padding:var(--sp-3); border:1px solid var(--border-hairline); transition:all 0.15s ease;">
+              <div class="flex justify-between items-center mb-1">
+                <strong style="font-size:0.85rem;">{{ look.title }}</strong>
+                <span style="width:14px; height:14px; border-radius:50%; background:{{ look.hair_color }}; display:inline-block; border:1px solid #ccc;"></span>
+              </div>
+              <span class="pill pill-clay text-xs">{{ look.target_undertone }} Tone</span>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %}
+
+        <!-- 3. Hairstyle & Color -->
+        <div class="card mb-4">
+          <div class="eyebrow mb-2">2 / Hair Transformation</div>
+          <input type="hidden" name="hair_mode" id="hair-mode-input" value="color" />
+
+          <div class="tabs-segmented mb-3">
+            <button type="button" id="tab-btn-color" class="seg-btn active" onclick="switchHairMode('color')">Hair Color</button>
+            <button type="button" id="tab-btn-transfer" class="seg-btn" onclick="switchHairMode('transfer')">Hairstyle Cut</button>
+          </div>
+
+          <!-- Color Mode -->
+          <div id="hair-color-section">
+            <div class="form-group mb-2">
+              <label class="form-label text-xs">Pick Hair Color</label>
+              <div class="flex gap-2 items-center">
+                <input type="color" id="hair-color-picker" value="#8c3a27"
+                       style="height:36px; width:45px; border-radius:6px; cursor:pointer;"
+                       oninput="syncHairColor(this.value)" />
+                <input type="text" id="hair-color-text" name="hair_color_choice" class="form-input mono text-xs" value="#8c3a27"
+                       oninput="syncHairColor(this.value)" style="flex:1;" />
+              </div>
+            </div>
+
+            <!-- Palette quick swatches -->
+            <div class="flex gap-1 flex-wrap mt-2">
+              <span class="swatch-mini" style="background:#2c3e50;" onclick="syncHairColor('#2c3e50')" title="Espresso Noir"></span>
+              <span class="swatch-mini" style="background:#8c3a27;" onclick="syncHairColor('#8c3a27')" title="Terracotta Copper"></span>
+              <span class="swatch-mini" style="background:#d35400;" onclick="syncHairColor('#d35400')" title="Warm Amber"></span>
+              <span class="swatch-mini" style="background:#b08556;" onclick="syncHairColor('#b08556')" title="Honey Blonde"></span>
+              <span class="swatch-mini" style="background:#5e2b4c;" onclick="syncHairColor('#5e2b4c')" title="Deep Velvet Plum"></span>
+            </div>
+          </div>
+
+          <!-- Hairstyle Transfer Mode -->
+          <div id="hair-transfer-section" class="hidden">
+            <input type="hidden" name="hairstyle_ref_url" id="hairstyle-ref-url-input" value="" />
+            <div class="flex justify-between items-center mb-2">
+              <label class="form-label text-xs" style="margin-bottom:0;">Select Hairstyle Cut</label>
+              <span class="pill pill-clay" style="font-size:0.6rem;">{{ hairstyles|length }} styles</span>
+            </div>
+
+            <div class="flex gap-2 mb-2">
+              <input type="text" id="complete-hair-search" class="form-input form-input-sm" placeholder="🔍 Search cuts..." oninput="filterCompleteHair()" style="font-size:0.7rem; padding:4px 8px;" />
+            </div>
+
+            <div class="flex gap-1 mb-2">
+              <button type="button" class="btn btn-ghost-dark btn-xs complete-hair-filter active" onclick="setCompleteHairFilter('all', this)" style="font-size:0.65rem; padding:2px 6px;">All</button>
+              <button type="button" class="btn btn-ghost-dark btn-xs complete-hair-filter" onclick="setCompleteHairFilter('women', this)" style="font-size:0.65rem; padding:2px 6px;">Women</button>
+              <button type="button" class="btn btn-ghost-dark btn-xs complete-hair-filter" onclick="setCompleteHairFilter('men', this)" style="font-size:0.65rem; padding:2px 6px;">Men</button>
+            </div>
+
+            <div id="complete-hair-grid" class="grid-3 gap-2" style="max-height: 240px; overflow-y: auto; padding-right: 4px;">
+              {% for h in hairstyles %}
+              <div class="asset-choice-card complete-hair-card" data-name="{{ h.name|lower }}" data-meta="{{ h.meta_json or '' }}" onclick="selectAsset('hairstyle', '{{ h.b2_url }}', this)" style="cursor:pointer;">
+                <img src="{{ h.b2_url }}" alt="{{ h.name }}" loading="lazy" style="aspect-ratio:3/4; object-fit:cover;" />
+                <span title="{{ h.name }}">{{ h.name }}</span>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+
+        <!-- 4. Contact Lenses (Optional) -->
+        {% if lenses %}
+        <div class="card mb-4">
+          <div class="eyebrow mb-2">3 / Eye Contact Lenses (Optional)</div>
+          <input type="hidden" name="lens_choice_url" id="lens-choice-url-input" value="" />
+          <div class="grid-4 gap-2">
+            <div class="asset-choice-card active" onclick="selectAsset('lens', '', this)">
+              <div class="none-choice">None</div>
+              <span>Natural</span>
+            </div>
+            {% for l in lenses %}
+            <div class="asset-choice-card" onclick="selectAsset('lens', '{{ l.b2_url }}', this)">
+              <img src="{{ l.b2_url }}" alt="{{ l.name }}" style="border-radius:50%;" />
+              <span>{{ l.name }}</span>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %}
+
+        <!-- 5. Clothes & Wardrobe (Optional) -->
+        {% if garments %}
+        <div class="card mb-4">
+          <div class="eyebrow mb-2">4 / Wardrobe & Garments (Optional)</div>
+          <input type="hidden" name="garment_choice_url" id="garment-choice-url-input" value="" />
+          <div class="grid-3 gap-2">
+            <div class="asset-choice-card active" onclick="selectAsset('garment', '', this)">
+              <div class="none-choice">None</div>
+              <span>Keep Current</span>
+            </div>
+            {% for g in garments %}
+            <div class="asset-choice-card" onclick="selectAsset('garment', '{{ g.b2_url }}', this)">
+              <img src="{{ g.b2_url }}" alt="{{ g.name }}" style="border-radius:4px; height:60px; object-fit:cover;" />
+              <span>{{ g.name }}</span>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %}
+
+        <!-- Submit -->
+        <button type="submit" class="btn btn-primary btn-lg w-full" style="justify-content:center;">
+          ✨ Synthesize Complete Makeover <span class="arrow">→</span>
+        </button>
+
+      </form>
+    </div>
+
+    <!-- ── Right Column: Interactive Chained Reveal ─────────── -->
+    <div class="panel">
+      <div id="result-panel" class="result-placeholder">
+        <div class="card text-center p-8" style="background:transparent; border-style:dashed;">
+          <p class="muted">Your complete before/after makeover reveal will appear here.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<style>
+.look-preset-card:hover {
+  background: var(--bg-cream-soft);
+  border-color: var(--accent-lime) !important;
+}
+.look-preset-card.active {
+  background: var(--bg-cream);
+  border-color: var(--accent-terracotta) !important;
+}
+.tabs-segmented {
+  display: flex;
+  background: var(--bg-cream);
+  border-radius: var(--r-sm);
+  padding: 3px;
+  gap: 3px;
+}
+.seg-btn {
+  flex: 1;
+  padding: 6px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  border-radius: 4px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--muted);
+}
+.seg-btn.active {
+  background: #fff;
+  color: var(--ink);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+.swatch-mini {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 1px solid rgba(0,0,0,0.15);
+  display: inline-block;
+  transition: transform 0.1s ease;
+}
+.swatch-mini:hover {
+  transform: scale(1.15);
+}
+.asset-choice-card {
+  text-align: center;
+  padding: 6px;
+  border-radius: 6px;
+  border: 1px solid var(--border-hairline);
+  cursor: pointer;
+  background: #fff;
+  transition: all 0.15s ease;
+}
+.asset-choice-card img {
+  width: 42px;
+  height: 42px;
+  object-fit: cover;
+  margin: 0 auto 4px auto;
+  display: block;
+}
+.asset-choice-card span {
+  font-size: 0.65rem;
+  color: var(--ink);
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.asset-choice-card .none-choice {
+  width: 42px;
+  height: 42px;
+  line-height: 42px;
+  background: var(--bg-cream);
+  border-radius: 4px;
+  margin: 0 auto 4px auto;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+.asset-choice-card.active {
+  border-color: var(--accent-terracotta);
+  background: rgba(197, 106, 63, 0.08);
+}
+</style>
+
+<script>
+function syncHairColor(val) {
+  document.getElementById('hair-color-picker').value = val;
+  document.getElementById('hair-color-text').value = val;
+}
+
+function switchHairMode(mode) {
+  document.getElementById('hair-mode-input').value = mode;
+  if (mode === 'color') {
+    document.getElementById('tab-btn-color').classList.add('active');
+    document.getElementById('tab-btn-transfer').classList.remove('active');
+    document.getElementById('hair-color-section').classList.remove('hidden');
+    document.getElementById('hair-transfer-section').classList.add('hidden');
+  } else {
+    document.getElementById('tab-btn-transfer').classList.add('active');
+    document.getElementById('tab-btn-color').classList.remove('active');
+    document.getElementById('hair-transfer-section').classList.remove('hidden');
+    document.getElementById('hair-color-section').classList.add('hidden');
+  }
+}
+
+function selectAsset(category, url, el) {
+  if (category === 'hairstyle') {
+    document.getElementById('hairstyle-ref-url-input').value = url;
+  } else if (category === 'lens') {
+    document.getElementById('lens-choice-url-input').value = url;
+  } else if (category === 'garment') {
+    document.getElementById('garment-choice-url-input').value = url;
+  }
+
+  // Toggle active class among siblings
+  const parent = el.parentElement;
+  parent.querySelectorAll('.asset-choice-card').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function applyCuratedLook(hairColor, lensUrl, garmentUrl, cardEl) {
+  // 1. Highlight preset card
+  document.querySelectorAll('.look-preset-card').forEach(c => c.classList.remove('active'));
+  if (cardEl) cardEl.classList.add('active');
+
+  // 2. Set hair color
+  switchHairMode('color');
+  syncHairColor(hairColor);
+
+  // 3. Set lens
+  document.getElementById('lens-choice-url-input').value = lensUrl || '';
+
+  // 4. Set garment
+  document.getElementById('garment-choice-url-input').value = garmentUrl || '';
+}
+
+function setPresetBody(gender, btn) {
+  const femaleSilhouette = 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=800&q=80';
+  const maleSilhouette = 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=800&q=80';
+
+  const selectedUrl = gender === 'female' ? femaleSilhouette : maleSilhouette;
+  document.getElementById('body-preset-input').value = selectedUrl;
+  
+  const img = document.getElementById('body-upload-preview-img');
+  if (img) img.src = selectedUrl;
+  
+  const preview = document.getElementById('body-upload-preview');
+  if (preview) preview.classList.add('show');
+  
+  const placeholder = document.getElementById('body-upload-placeholder');
+  if (placeholder) placeholder.classList.add('hidden');
+}
+
+let completeGenderFilter = 'all';
+
+function setCompleteHairFilter(type, btn) {
+  completeGenderFilter = type;
+  document.querySelectorAll('.complete-hair-filter').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  filterCompleteHair();
+}
+
+function filterCompleteHair() {
+  const q = (document.getElementById('complete-hair-search')?.value || '').toLowerCase().trim();
+  document.querySelectorAll('.complete-hair-card').forEach(card => {
+    const name = card.getAttribute('data-name') || '';
+    const meta = card.getAttribute('data-meta') || '';
+    
+    const matchesSearch = !q || name.includes(q);
+    let matchesCategory = true;
+    if (completeGenderFilter === 'women') {
+      matchesCategory = meta.includes('"collection": "women"') || meta.includes('Women');
+    } else if (completeGenderFilter === 'men') {
+      matchesCategory = meta.includes('"collection": "men"') || meta.includes('Men');
+    }
+
+    if (matchesSearch && matchesCategory) {
+      card.style.display = 'block';
+    } else {
+      card.style.display = 'none';
+    }
+  });
+}
+</script>
+{% endblock %}

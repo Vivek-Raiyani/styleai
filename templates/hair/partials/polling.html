@@ -1,0 +1,12 @@
+<!-- Polling partial for hair -->
+<div hx-get="/hair/status/{{ task_id }}?result_id={{ result_id }}&mode={{ mode }}" hx-trigger="every 2s"
+  hx-target="#result-panel" hx-swap="innerHTML">
+
+  <div class="spinner-wrap">
+    <div class="spinner-ring"></div>
+    <div class="spinner-label">Transforming your hair…</div>
+    <div class="spinner-sub">Applying {% if mode == 'color' %}color simulation & shine{% else %}AI hairstyle synthesis{%
+      endif %}</div>
+  </div>
+
+</div>

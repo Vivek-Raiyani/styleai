@@ -1,0 +1,35 @@
+<div class="result-panel animate-fade-up" id="batch-tryon-poll-container"
+     hx-get="/style/batch/status?batch_data={{ batch_data_encoded }}&tryon_type={{ tryon_type }}"
+     hx-trigger="load delay:2s"
+     hx-target="#result-panel"
+     hx-swap="innerHTML">
+
+  <div class="card mb-4" style="text-align:center; padding:var(--sp-6);">
+    <div class="spinner mb-3" style="width:36px; height:36px; border-width:3px; margin:0 auto;"></div>
+    <h3 style="font-size:1.15rem; margin-bottom:var(--sp-1);">Fitting {{ items|length }} {{ tryon_type|title }} Items in Parallel</h3>
+    <p class="muted text-xs mb-4">YouCam generative AI is rendering each item onto your model portrait...</p>
+
+    <!-- Mini Progress Cards -->
+    <div class="grid-2 gap-3" style="max-width:520px; margin:0 auto; text-align:left;">
+      {% for item in items %}
+      <div class="card" style="padding:var(--sp-2) var(--sp-3); background:var(--bg-card); display:flex; align-items:center; gap:10px; border-color:{% if item.status == 'success' %}var(--accent-lime){% else %}var(--border-hairline){% endif %};">
+        <div style="width:40px; height:40px; border-radius:4px; overflow:hidden; background:#f4f3f0; flex-shrink:0; display:flex; align-items:center; justify-content:center;">
+          <img src="{{ item.ref_url }}" alt="{{ item.item_name }}" style="width:100%; height:100%; object-fit:contain;" />
+        </div>
+        <div style="flex:1; min-width:0;">
+          <span style="font-size:0.75rem; font-weight:600; display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ item.item_name }}</span>
+          <span class="muted text-xs" style="font-size:0.65rem;">
+            {% if item.status == 'success' %}
+            <span style="color:var(--accent-lime); font-weight:600;">✓ Ready</span>
+            {% elif item.status == 'error' %}
+            <span style="color:var(--status-error-fg);">✕ Failed</span>
+            {% else %}
+            <span>Generating...</span>
+            {% endif %}
+          </span>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>

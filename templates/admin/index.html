@@ -1,0 +1,400 @@
+{% extends "base.html" %}
+{% block title %}Admin Studio — StyleAI Studio{% endblock %}
+{% block module_name %}admin{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <div class="eyebrow">Studio Management & AI Pipeline</div>
+    <h1>Admin Control Center.</h1>
+  </div>
+  <div class="flex gap-2 items-center">
+    {% if tab == 'catalog' %}
+    <button onclick="document.getElementById('upload-modal').classList.remove('hidden')" class="btn btn-primary btn-sm">+ Upload Asset</button>
+    {% endif %}
+  </div>
+</div>
+
+<div class="page-body">
+  <div class="content-max">
+
+    <!-- ── Main Section Tabs ────────────────────────────────── -->
+    <div class="flex gap-3 mb-6 flex-wrap" style="border-bottom:1px solid var(--border-mid); padding-bottom:var(--sp-3);">
+      <a href="/admin?tab=catalog" class="pill {% if tab == 'catalog' %}pill-lime{% else %}pill-clay{% endif %}">
+        📦 Asset Catalog ({{ assets | length }})
+      </a>
+      <a href="/admin?tab=guidelines" class="pill {% if tab == 'guidelines' %}pill-lime{% else %}pill-clay{% endif %}">
+        📐 YouCam AI Guidelines
+      </a>
+      <a href="/admin?tab=inspector" class="pill {% if tab == 'inspector' %}pill-lime{% else %}pill-clay{% endif %}">
+        🔍 Run Inspector ({{ recent_runs | length }})
+      </a>
+      <a href="/admin?tab=maintenance" class="pill {% if tab == 'maintenance' %}pill-lime{% else %}pill-clay{% endif %}">
+        🧹 System Maintenance & Data Reset
+      </a>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- TAB 1: ASSET CATALOG                                   -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    {% if tab == 'catalog' %}
+      <div class="flex gap-2 mb-5 flex-wrap">
+        <a href="/admin?tab=catalog" class="pill {% if not active_category %}pill-lime{% else %}pill-clay{% endif %}">All</a>
+        {% for cat in categories %}
+        <a href="/admin?tab=catalog&category={{ cat }}"
+           class="pill {% if active_category == cat %}pill-lime{% else %}pill-clay{% endif %}">
+           {{ cat | title }}s
+        </a>
+        {% endfor %}
+      </div>
+
+      {% if assets %}
+      <div class="card" style="padding:0; overflow:hidden;">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Preview</th>
+              <th>Name</th>
+              <th>Category</th>
+              <th>Uploaded</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for asset in assets %}
+            <tr>
+              <td>
+                <img class="asset-thumb" src="{{ asset.b2_url }}" alt="{{ asset.name }}" loading="lazy" />
+              </td>
+              <td><strong>{{ asset.name }}</strong></td>
+              <td><span class="pill pill-clay">{{ asset.category }}</span></td>
+              <td class="muted text-sm">{{ asset.created_at.strftime('%b %d, %Y') }}</td>
+              <td>
+                <form method="post" action="/admin/delete/{{ asset.id }}"
+                      onsubmit="return confirm('Delete {{ asset.name }}?');"
+                      style="display:inline;">
+                  <button type="submit" class="btn btn-ghost btn-sm" style="color:var(--c-error-fg);">Delete</button>
+                </form>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="card" style="text-align:center; padding:var(--sp-8);">
+        <div style="font-size:2.5rem; margin-bottom:var(--sp-4); opacity:0.3;">📂</div>
+        <p class="muted">No assets found in this category.</p>
+      </div>
+      {% endif %}
+    {% endif %}
+
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- TAB 3: YOUCAM AI GUIDELINES & STANDARDS                 -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    {% if tab == 'guidelines' %}
+      <div class="card mb-6" style="background:var(--ink); color:#fff; border-color:rgba(255,255,255,0.1);">
+        <div class="flex justify-between items-center flex-wrap gap-4">
+          <div>
+            <div class="eyebrow" style="color:var(--accent-lime);">Official Specification Standards</div>
+            <h2 style="color:#fff; margin-bottom:var(--sp-2);">YouCam AI Asset & Upload Guidelines</h2>
+            <p style="color:rgba(255,255,255,0.7); max-width:680px; font-size:0.95rem;">
+              To ensure optimal AI synthesis fidelity, minimum artifacting, and accurate neural drape rendering, all uploaded talent portraits and garments must adhere to Perfect Corp's technical standards.
+            </p>
+          </div>
+        </div>
+
+        <div class="stat-strip mt-5" style="border-top:1px solid rgba(255,255,255,0.1); padding-top:var(--sp-4); margin-bottom:0;">
+          <div class="stat-item">
+            <span class="stat-num serif" style="color:#fff;">{{ total_preset_models }}</span>
+            <span class="stat-lbl" style="color:rgba(255,255,255,0.6);">Preset Talent Models</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-num serif" style="color:#fff;">{{ total_preset_products }}</span>
+            <span class="stat-lbl" style="color:rgba(255,255,255,0.6);">Preset Garments</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-num serif" style="color:#fff;">{{ assets | length }}</span>
+            <span class="stat-lbl" style="color:rgba(255,255,255,0.6);">Catalog Beauty Assets</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-num serif" style="color:var(--accent-lime);">{{ curated_looks | length }}</span>
+            <span class="stat-lbl" style="color:rgba(255,255,255,0.6);">Curated Look Bundles</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-2 mb-6">
+        <!-- Guideline 1: Cloth VTO -->
+        <div class="card">
+          <div class="flex items-center gap-2 mb-3">
+            <span style="font-size:1.5rem;">👔</span>
+            <div>
+              <h3 style="margin-bottom:0;">AI Virtual Clothing (cloth-v4)</h3>
+              <span class="text-xs mono muted">Endpoint: /s2s/v2.0/task/cloth-v4</span>
+            </div>
+          </div>
+          
+          <div class="mb-4">
+            <h4 class="text-xs eyebrow" style="color:var(--accent-terracotta);">Model Photo Constraints</h4>
+            <ul class="text-xs muted" style="padding-left:1.2rem; line-height:1.6;">
+              <li><strong>Posture:</strong> Standing or waist-up facing forward. Single subject.</li>
+              <li><strong>Framing:</strong> Subject must occupy <strong>75%–85%+</strong> of the image area.</li>
+              <li><strong>Lighting:</strong> Balanced daylight or studio fill. Avoid harsh side-shadows.</li>
+              <li><strong>Arms:</strong> Keep arms slightly away from torso so garment boundary is clear.</li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 class="text-xs eyebrow" style="color:var(--accent-terracotta);">Garment Image Constraints</h4>
+            <ul class="text-xs muted" style="padding-left:1.2rem; line-height:1.6;">
+              <li><strong>Background:</strong> Clean solid white, neutral studio, or transparent PNG.</li>
+              <li><strong>Display:</strong> Ghost mannequin or clean flat-lay without heavy folds.</li>
+              <li><strong>Categories:</strong> <code>dresses</code>, <code>upper_body</code>, <code>lower_body</code>, <code>outerwear</code>, or <code>auto</code>.</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Guideline 2: Hair Transfer & Color -->
+        <div class="card">
+          <div class="flex items-center gap-2 mb-3">
+            <span style="font-size:1.5rem;">💇‍♀️</span>
+            <div>
+              <h3 style="margin-bottom:0;">Hairstyle Transfer & Color</h3>
+              <span class="text-xs mono muted">Endpoints: /hair-transfer & /hair-color</span>
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <h4 class="text-xs eyebrow" style="color:var(--accent-terracotta);">Hairstyle Reference Standards</h4>
+            <ul class="text-xs muted" style="padding-left:1.2rem; line-height:1.6;">
+              <li><strong>Angle:</strong> Direct frontal or gentle 3/4 portrait angle.</li>
+              <li><strong>Contrast:</strong> Hair should contrast clearly against background for clean neural extraction.</li>
+              <li><strong>Forehead & Hairline:</strong> Fully unobstructed, no hats, glasses, or headwear.</li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 class="text-xs eyebrow" style="color:var(--accent-terracotta);">Color Pattern Support</h4>
+            <ul class="text-xs muted" style="padding-left:1.2rem; line-height:1.6;">
+              <li>Supports single-tone full color and dual-tone gradient Ombré blending.</li>
+              <li>Hex color codes with intensity and shine control (0–100).</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Guideline 3: Eye Lenses -->
+        <div class="card">
+          <div class="flex items-center gap-2 mb-3">
+            <span style="font-size:1.5rem;">👁️</span>
+            <div>
+              <h3 style="margin-bottom:0;">Eye Color & Contact Lens VTO</h3>
+              <span class="text-xs mono muted">Endpoint: /s2s/v2.0/task/eye-color-vto</span>
+            </div>
+          </div>
+
+          <div>
+            <h4 class="text-xs eyebrow" style="color:var(--accent-terracotta);">Lens Asset Specification</h4>
+            <ul class="text-xs muted" style="padding-left:1.2rem; line-height:1.6;">
+              <li><strong>Format:</strong> 32-bit Transparent PNG with alpha channel around iris.</li>
+              <li><strong>Pattern:</strong> Centered circular iris pattern with clear pupil hole.</li>
+              <li><strong>Dimensions:</strong> 200×200px to 600×600px square.</li>
+              <li><strong>Effect parameters:</strong> Intensity (1–100), Enlargement (0–100), Skin smoothing strength.</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Guideline 4: Skin Analysis -->
+        <div class="card">
+          <div class="flex items-center gap-2 mb-3">
+            <span style="font-size:1.5rem;">✨</span>
+            <div>
+              <h3 style="margin-bottom:0;">Skin & Tone Diagnostics</h3>
+              <span class="text-xs mono muted">Endpoints: /skin-analysis & /skin-tone-analysis</span>
+            </div>
+          </div>
+
+          <div>
+            <h4 class="text-xs eyebrow" style="color:var(--accent-terracotta);">Diagnostic Portrait Criteria</h4>
+            <ul class="text-xs muted" style="padding-left:1.2rem; line-height:1.6;">
+              <li><strong>Facial Visibility:</strong> Full face uncovered (cheeks, forehead, chin).</li>
+              <li><strong>Lighting:</strong> Diffused natural daylight. No tinted sunglasses or filters.</li>
+              <li><strong>Expression:</strong> Neutral, eyes looking at camera.</li>
+              <li><strong>16 Metrics:</strong> Detects acne, firmness, radiance, tear troughs, dark circles, oiliness, and undertone.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    {% endif %}
+
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- TAB 4: SYSTEM RUN INSPECTOR                            -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    {% if tab == 'inspector' %}
+      <p class="muted text-sm mb-5">
+        Real-time telemetry and execution logs across YouCam API modules.
+      </p>
+
+      {% if recent_runs %}
+      <div class="card" style="padding:0; overflow:hidden;">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Module</th>
+              <th>User ID</th>
+              <th>Input / Output</th>
+              <th>Status</th>
+              <th>Timestamp</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for r in recent_runs %}
+            <tr>
+              <td class="mono text-xs">#{{ r.id }}</td>
+              <td><strong>{{ r.module }}</strong></td>
+              <td>User {{ r.user_id }}</td>
+              <td>
+                <div class="flex items-center gap-2">
+                  {% if r.selfie %}
+                  <a href="{{ r.selfie.b2_url }}" target="_blank" class="muted text-xs">Selfie ↗</a>
+                  {% endif %}
+                  {% if r.result_url %}
+                  <a href="{{ r.result_url }}" target="_blank" style="color:var(--accent-terracotta); font-weight:600; font-size:0.75rem;">Result ↗</a>
+                  {% endif %}
+                </div>
+              </td>
+              <td>
+                {% if r.result_url or r.result_json %}
+                <span class="pill pill-lime" style="font-size:0.7rem;">Completed</span>
+                {% else %}
+                <span class="pill pill-clay" style="font-size:0.7rem;">Pending</span>
+                {% endif %}
+              </td>
+              <td class="muted text-xs mono">{{ r.created_at.strftime('%b %d, %H:%M:%S') }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="card text-center p-8">
+        <p class="muted">No runs recorded yet.</p>
+      </div>
+      {% endif %}
+    {% endif %}
+
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- TAB 4: SYSTEM MAINTENANCE & CLEANUP                     -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    {% if tab == 'maintenance' %}
+      <div class="card mb-6" style="border-left: 4px solid var(--accent-lime);">
+        <div class="eyebrow">Database & Deployment Hygiene</div>
+        <h2 style="margin-bottom:var(--sp-2);">Pre-Deployment & Maintenance Center</h2>
+        <p class="muted text-sm">
+          Purge ephemeral guest session accounts, test selfies, and developmental runs before or after deploying on Render.
+          Preset AI catalog assets and models are strictly preserved.
+        </p>
+      </div>
+
+      <!-- Current Database Statistics -->
+      <div class="grid-4 mb-6">
+        <div class="card stat-card">
+          <div class="stat-num" style="color:var(--c-text);">{{ total_guests }}</div>
+          <div class="stat-label">Guest Accounts</div>
+        </div>
+        <div class="card stat-card">
+          <div class="stat-num" style="color:var(--accent-lime);">{{ total_registered }}</div>
+          <div class="stat-label">Admin / Registered</div>
+        </div>
+        <div class="card stat-card">
+          <div class="stat-num" style="color:var(--c-text);">{{ total_selfies }}</div>
+          <div class="stat-label">Selfies / Uploads</div>
+        </div>
+        <div class="card stat-card">
+          <div class="stat-num" style="color:var(--accent-lime);">{{ total_results }}</div>
+          <div class="stat-label">Total AI Runs</div>
+        </div>
+      </div>
+
+      <div class="grid-2 gap-6">
+        <!-- Action 1: Clear Guest Accounts Only -->
+        <div class="card">
+          <div style="font-size:1.8rem; margin-bottom:var(--sp-2);">👤 ➡️ 🗑️</div>
+          <h3 style="margin-bottom:var(--sp-2);">Purge Guest Accounts Only</h3>
+          <p class="muted text-sm mb-4">
+            Deletes all temporary guest accounts, their uploaded selfies, and their pipeline results.
+            Preserves registered admin/demo accounts and catalog assets.
+          </p>
+          <form method="post" action="/admin/maintenance/clean-guests" onsubmit="return confirm('Purge all guest accounts and their data?');">
+            <button type="submit" class="btn btn-secondary w-full">
+              Purge Guest Data ({{ total_guests }} guests)
+            </button>
+          </form>
+        </div>
+
+        <!-- Action 2: Purge All Test Runs & Guest Data -->
+        <div class="card" style="border: 1px solid rgba(220, 38, 38, 0.3);">
+          <div style="font-size:1.8rem; margin-bottom:var(--sp-2);">🧹 🚀</div>
+          <h3 style="margin-bottom:var(--sp-2);">Fresh Production State (Purge All Test Runs)</h3>
+          <p class="muted text-sm mb-4">
+            Removes all guest accounts PLUS all test runs, test selfies, and batch matrix test results across all accounts.
+            Leaves a pristine production state with preloaded fashion models and curated catalog assets.
+          </p>
+          <form method="post" action="/admin/maintenance/clean-test-data" onsubmit="return confirm('WARNING: This will reset all test runs and selfies across all accounts. Proceed?');">
+            <button type="submit" class="btn btn-primary w-full" style="background:#dc2626; border-color:#dc2626;">
+              Reset to Clean Production State
+            </button>
+          </form>
+        </div>
+      </div>
+    {% endif %}
+
+  </div>
+</div>
+
+
+<!-- ── Modal 1: Asset Upload ────────────────────────────────── -->
+<div id="upload-modal" class="hidden"
+     style="position:fixed;inset:0;background:rgba(28,27,23,0.6);z-index:500;display:flex;align-items:center;justify-content:center;padding:var(--sp-5);">
+  <div class="card" style="width:100%;max-width:480px;background:var(--bg-cream);">
+    <div class="flex justify-between items-center mb-5">
+      <h3>Upload Asset</h3>
+      <button onclick="document.getElementById('upload-modal').classList.add('hidden')"
+              class="btn btn-ghost btn-sm">✕</button>
+    </div>
+
+    <form method="post" action="/admin/upload" enctype="multipart/form-data">
+      <div class="form-group">
+        <label class="form-label" for="a-name">Asset Name</label>
+        <input id="a-name" class="form-input" type="text" name="name" placeholder="e.g. Hazel Brown Lens" required />
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="a-cat">Category</label>
+        <select id="a-cat" class="form-input form-select" name="category" required>
+          {% for cat in categories %}
+          <option value="{{ cat }}">{{ cat | title }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="a-file">Image File</label>
+        <input id="a-file" class="form-input" type="file" name="file" accept="image/*" required style="padding:8px;" />
+        <p class="muted text-xs" style="margin-top:4px;">Lens: PNG 200–600px. Garment: JPG/PNG min 512×384. Hairstyle: JPG min 512px.</p>
+      </div>
+      <div class="flex justify-between items-center mt-5">
+        <button type="button" onclick="document.getElementById('upload-modal').classList.add('hidden')"
+                class="btn btn-secondary">Cancel</button>
+        <button type="submit" class="btn btn-primary">Upload & Publish</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+{% endblock %}

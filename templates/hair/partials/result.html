@@ -1,0 +1,64 @@
+<div class="result-panel animate-fade-up">
+
+  <div class="score-hero mb-4" style="padding:var(--sp-4);">
+    <span class="pill pill-lime mb-3">Transformation Ready</span>
+    <div style="border-radius:var(--r-md); overflow:hidden; max-width:440px; margin:0 auto; box-shadow:0 8px 30px rgba(0,0,0,0.15); position:relative; background:#111;">
+      <img id="single-result-img" src="{{ output_url }}" alt="Hair Result" style="width:100%; display:block;" />
+    </div>
+  </div>
+
+  <!-- Color Test Section on This Transformed Style -->
+  <div class="card mb-4" style="max-width:440px; margin:0 auto var(--sp-4); text-align:left; background:var(--bg-cream);">
+    <div class="flex justify-between items-center mb-2">
+      <span style="font-size:0.75rem; font-weight:700; text-transform:uppercase;" class="muted">🎨 Test Colors On This Style</span>
+      <span id="single-recolor-status" class="muted text-xs">Try different shades</span>
+    </div>
+
+    <!-- Quick Swatches -->
+    <div class="flex gap-2 mb-3 flex-wrap items-center">
+      <button type="button" class="color-swatch-btn" onclick="applySingleRecolor('{{ output_url }}', '#b87333', 'Copper Amber')" style="background:#b87333;" title="Copper Amber"></button>
+      <button type="button" class="color-swatch-btn" onclick="applySingleRecolor('{{ output_url }}', '#d4af37', 'Honey Blonde')" style="background:#d4af37;" title="Honey Blonde"></button>
+      <button type="button" class="color-swatch-btn" onclick="applySingleRecolor('{{ output_url }}', '#4a2c11', 'Espresso Brunette')" style="background:#4a2c11;" title="Espresso Brunette"></button>
+      <button type="button" class="color-swatch-btn" onclick="applySingleRecolor('{{ output_url }}', '#800020', 'Velvet Burgundy')" style="background:#800020;" title="Velvet Burgundy"></button>
+      <button type="button" class="color-swatch-btn" onclick="applySingleRecolor('{{ output_url }}', '#e0a899', 'Rose Quartz')" style="background:#e0a899;" title="Rose Quartz"></button>
+      <button type="button" class="color-swatch-btn" onclick="applySingleRecolor('{{ output_url }}', '#c0c0c0', 'Platinum Silver')" style="background:#c0c0c0;" title="Platinum Silver"></button>
+      <button type="button" class="color-swatch-btn" onclick="applySingleRecolor('{{ output_url }}', '#2b1b17', 'Jet Black')" style="background:#2b1b17;" title="Jet Black"></button>
+    </div>
+
+    <!-- Custom Shade Picker -->
+    <div class="flex gap-2 items-center">
+      <input type="color" id="single-custom-picker" value="#8c3a27" style="height:32px; width:44px; border-radius:6px; border:1px solid var(--border-mid); cursor:pointer; padding:2px;" />
+      <button type="button" class="btn btn-secondary btn-xs flex-1" style="font-size:0.75rem; padding:6px 10px;"
+              onclick="applySingleRecolor('{{ output_url }}', document.getElementById('single-custom-picker').value, 'Custom Shade')">
+        Apply Custom Hair Color
+      </button>
+      <button type="button" class="btn btn-ghost-dark btn-xs" style="font-size:0.75rem; padding:6px 8px;"
+              onclick="document.getElementById('single-result-img').src = '{{ output_url }}'; document.getElementById('single-recolor-status').innerText = 'Reset to original';">
+        ↺ Reset
+      </button>
+    </div>
+  </div>
+
+  <div class="flex gap-3 justify-center flex-wrap">
+    <a id="single-download-link" href="{{ output_url }}" target="_blank" download="styleai-hair.jpg" class="btn btn-secondary">Download Photo</a>
+    <a href="/eyes" class="btn btn-primary">Try Matching Eye Lenses <span class="arrow">→</span></a>
+  </div>
+
+</div>
+
+<style>
+.color-swatch-btn {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.25);
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  padding: 0;
+}
+.color-swatch-btn:hover {
+  transform: scale(1.25);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+}
+</style>

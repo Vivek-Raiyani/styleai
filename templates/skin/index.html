@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block title %}Skin Analysis — StyleAI Studio{% endblock %}
+{% block module_name %}skin{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <div class="eyebrow">01 / Skin Analysis</div>
+    <h1>Read your skin.</h1>
+  </div>
+  <span class="pill pill-lime">16 metrics</span>
+</div>
+
+<div class="page-body">
+  <div class="content-max">
+    <div class="split split-narrow">
+
+      <!-- ── Left: Upload form ─────────────────────────────── -->
+      <div>
+        <p class="muted text-sm mb-5" style="max-width:440px;">
+          Upload a well-lit, forward-facing selfie. The AI will analyse 16 skin metrics
+          and give you a complete health report with scores, your skin type, and estimated skin age.
+        </p>
+
+        <form id="skin-form"
+              method="post"
+              action="/skin/start"
+              hx-post="/skin/start"
+              hx-target="#result-panel"
+              hx-swap="innerHTML"
+              hx-encoding="multipart/form-data"
+              enctype="multipart/form-data">
+
+          <!-- Upload zone -->
+          <div class="upload-zone mb-5" id="skin-upload-zone">
+            <div class="upload-content">
+              <span class="uz-icon">🖼️</span>
+              <div class="uz-title">Drop your selfie here</div>
+              <p class="uz-hint">or click to browse · jpg / png · auto-resized to fit</p>
+              <input type="file" name="selfie_file" id="selfie_file" accept="image/jpeg,image/png,image/webp"
+                     style="display:none;" />
+            </div>
+            <div class="upload-preview">
+              <img src="" alt="Preview" />
+              <button type="button" onclick="document.getElementById('selfie_file').click()" class="btn btn-secondary btn-sm">Change photo</button>
+            </div>
+          </div>
+
+          <!-- Hidden base64 (from CameraKit) -->
+          <input type="hidden" name="base64_image" id="base64_image" />
+
+          <!-- Camera button -->
+          <div class="flex gap-3 mb-5">
+            <button type="button" class="camera-btn btn btn-secondary btn-sm">📷 Take Selfie</button>
+          </div>
+
+          <!-- Image requirements -->
+          <div class="card" style="padding:var(--sp-4); margin-bottom:var(--sp-5); font-size:0.9rem; color:var(--ink-muted);">
+            <div style="font-family:'JetBrains Mono',monospace; font-size:0.76rem; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; margin-bottom:var(--sp-2); color:var(--ink);">Image requirements</div>
+            <ul style="list-style:none; display:flex; flex-direction:column; gap:6px;">
+              <li>✓ Forward-facing, fully visible face</li>
+              <li>✓ Good lighting — not too dark</li>
+              <li>✓ Face width &gt; 60% of image width</li>
+              <li>✓ Min short side: 480px (SD) · 1080px (HD)</li>
+            </ul>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-full btn-lg" id="analyze-btn">
+            Analyse my skin <span class="arrow">→</span>
+          </button>
+        </form>
+      </div>
+
+      <!-- ── Right: Result panel ───────────────────────────── -->
+      <div>
+        <div id="result-panel">
+          <!-- Empty state -->
+          <div class="card" style="text-align:center; padding:var(--sp-8); border-style:dashed;">
+            <div style="font-size:3rem; margin-bottom:var(--sp-4); opacity:0.3;">🧬</div>
+            <p class="muted">Your skin analysis results will appear here.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}

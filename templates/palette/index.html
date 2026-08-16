@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block title %}Color Palette — StyleAI Studio{% endblock %}
+{% block module_name %}palette{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <div class="eyebrow">02 / Color Palette</div>
+    <h1>Your personal color DNA.</h1>
+  </div>
+  <span class="pill pill-lime">Skin Tone & Seasonal DNA</span>
+</div>
+
+<div class="page-body">
+  <div class="content-max">
+    <div class="split split-narrow">
+
+      <!-- ── Left: Upload form ─────────────────────────────── -->
+      <div>
+        <p class="muted text-sm mb-5" style="max-width:440px;">
+          Extract your facial color coordinates (skin pantone, undertone, hair, eyes, and lip shades) 
+          and discover your seasonal styling palette.
+        </p>
+
+        <form id="palette-form"
+              method="post"
+              action="/palette/start"
+              hx-post="/palette/start"
+              hx-target="#result-panel"
+              hx-swap="innerHTML"
+              hx-encoding="multipart/form-data"
+              enctype="multipart/form-data">
+
+          <!-- Upload zone -->
+          <div class="upload-zone mb-5" id="palette-upload-zone">
+            <div class="upload-content">
+              <span class="uz-icon">🎨</span>
+              <div class="uz-title">Upload your portrait</div>
+              <p class="uz-hint">jpg / png · neutral lighting recommended</p>
+              <input type="file" name="selfie_file" id="palette_file" accept="image/jpeg,image/png,image/webp"
+                     style="display:none;" />
+            </div>
+            <div class="upload-preview">
+              <img src="" alt="Preview" />
+              <button type="button" onclick="document.getElementById('palette_file').click()" class="btn btn-secondary btn-sm">Change photo</button>
+            </div>
+          </div>
+
+          <!-- Hidden base64 (from CameraKit) -->
+          <input type="hidden" name="base64_image" id="base64_image" />
+
+          <!-- Camera button -->
+          <div class="flex gap-3 mb-5">
+            <button type="button" class="camera-btn btn btn-secondary btn-sm">📷 Take Selfie</button>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-full btn-lg" id="extract-btn">
+            Extract color DNA <span class="arrow">→</span>
+          </button>
+        </form>
+      </div>
+
+      <!-- ── Right: Result panel ───────────────────────────── -->
+      <div>
+        <div id="result-panel">
+          <!-- Empty state -->
+          <div class="card" style="text-align:center; padding:var(--sp-8); border-style:dashed;">
+            <div style="font-size:3rem; margin-bottom:var(--sp-4); opacity:0.3;">🎨</div>
+            <p class="muted">Your skin tone and extracted palette analysis will appear here.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,21 @@
+<div class="result-panel animate-fade-up">
+
+  <div class="score-hero mb-5" style="padding:var(--sp-4);">
+    <span class="pill pill-lime mb-3">
+      {% if tryon_type == 'shoes' %}👠 Footwear Try-On Complete
+      {% elif tryon_type == 'bag' %}👜 Luxury Bag Try-On Complete
+      {% elif tryon_type == 'necklace' %}📿 Necklace VTO Complete
+      {% elif tryon_type == 'earring' %}✨ Earrings VTO Complete
+      {% else %}👗 Garment Fitted{% endif %}
+    </span>
+    <div style="border-radius:var(--r-md); overflow:hidden; max-width:440px; margin:0 auto; box-shadow:0 8px 30px rgba(0,0,0,0.15);">
+      <img src="{{ output_url }}" alt="Virtual Try-On Result" style="width:100%; display:block;" />
+    </div>
+  </div>
+
+  <div class="flex gap-3 justify-center flex-wrap">
+    <a href="{{ output_url }}" target="_blank" download="styleai-{{ tryon_type or 'tryon' }}.jpg" class="btn btn-secondary">Download Photo</a>
+    <a href="/brand" class="btn btn-primary">Brand Studio Matrix <span class="arrow">→</span></a>
+  </div>
+
+</div>

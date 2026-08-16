@@ -1,0 +1,12 @@
+<div hx-get="/complete/step2/status/{{ task_id }}?result_id={{ result_id }}&selfie_url={{ selfie_url | urlencode }}{% if body_url %}&body_url={{ body_url | urlencode }}{% endif %}&hair_mode={{ hair_mode | urlencode }}&hair_color={{ hair_color | urlencode }}{% if hairstyle_ref_url %}&hairstyle_ref_url={{ hairstyle_ref_url | urlencode }}{% endif %}{% if lens_url %}&lens_url={{ lens_url | urlencode }}{% endif %}{% if garment_url %}&garment_url={{ garment_url | urlencode }}{% endif %}"
+     hx-trigger="every 2s"
+     hx-target="#result-panel"
+     hx-swap="innerHTML">
+
+  <div class="spinner-wrap">
+    <div class="spinner-ring"></div>
+    <div class="spinner-label">Step 2/4: Synthesizing hair transformation…</div>
+    <div class="spinner-sub">Applying tailored hair cut, luster & color</div>
+  </div>
+
+</div>

@@ -1,0 +1,13 @@
+<!-- Polling partial for eyes -->
+<div hx-get="/eyes/status/{{ task_id }}?result_id={{ result_id }}"
+     hx-trigger="every 2s"
+     hx-target="#result-panel"
+     hx-swap="innerHTML">
+
+  <div class="spinner-wrap">
+    <div class="spinner-ring"></div>
+    <div class="spinner-label">Fitting your lenses…</div>
+    <div class="spinner-sub">Adjusting iris contour, enlargement & smoothing</div>
+  </div>
+
+</div>

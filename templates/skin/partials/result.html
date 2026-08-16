@@ -1,0 +1,55 @@
+<!-- Result partial — replaces the spinner when analysis is complete -->
+<div class="result-panel">
+
+  <!-- ── Overall score hero ───────────────────────────── -->
+  <div class="score-hero mb-5">
+    {% if overall is not none %}
+    <span class="score-big">{{ overall }}</span>
+    <span class="score-sub">Overall Skin Score</span>
+    {% endif %}
+
+    <div style="display:flex; gap:var(--sp-3); justify-content:center; margin-top:var(--sp-4); flex-wrap:wrap;">
+      {% if skin_type %}
+      <span class="pill pill-terra">{{ skin_type }} Skin</span>
+      {% endif %}
+      {% if skin_age %}
+      <span class="pill pill-clay">Skin Age: {{ skin_age | int }}</span>
+      {% endif %}
+      {% if overall %}
+        {% if overall >= 80 %}
+        <span class="pill pill-success">Excellent</span>
+        {% elif overall >= 65 %}
+        <span class="pill pill-lime">Good</span>
+        {% elif overall >= 50 %}
+        <span class="pill pill-warning">Fair</span>
+        {% else %}
+        <span class="pill pill-error">Needs attention</span>
+        {% endif %}
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- ── Metric bars ───────────────────────────────────── -->
+  <div class="eyebrow mb-4">Your skin today</div>
+  <div class="grid-2">
+    {% for m in metrics %}
+    <div class="metric-bar">
+      <div class="metric-bar-head">
+        <span class="metric-name">{{ m.label }}</span>
+        <span class="metric-score">{{ m.ui_score }}</span>
+      </div>
+      <div class="metric-track">
+        <div class="metric-fill {% if m.ui_score >= 75 %}good{% elif m.ui_score >= 50 %}mid{% else %}low{% endif %}"
+             style="width: {{ m.ui_score }}%;"></div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- ── Actions ───────────────────────────────────────── -->
+  <div style="margin-top:var(--sp-6); display:flex; gap:var(--sp-3); flex-wrap:wrap;">
+    <a href="/palette" class="btn btn-primary">Extract my colors <span class="arrow">→</span></a>
+    <a href="/style" class="btn btn-secondary">Virtual Try-On Suite</a>
+  </div>
+
+</div>

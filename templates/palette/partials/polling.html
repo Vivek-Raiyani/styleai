@@ -1,0 +1,13 @@
+<!-- Polling partial for palette -->
+<div hx-get="/palette/status/{{ task_id }}?result_id={{ result_id }}"
+     hx-trigger="every 2s"
+     hx-target="#result-panel"
+     hx-swap="innerHTML">
+
+  <div class="spinner-wrap">
+    <div class="spinner-ring"></div>
+    <div class="spinner-label">Extracting your color DNA…</div>
+    <div class="spinner-sub">Detecting skin undertone, hair, eyes & lip shades</div>
+  </div>
+
+</div>

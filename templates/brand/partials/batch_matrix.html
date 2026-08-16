@@ -1,0 +1,102 @@
+<div id="batch-matrix-container" 
+     {% if is_processing %}
+     hx-get="/brand/batch/{{ batch.id }}/status" 
+     hx-trigger="every 2.5s" 
+     hx-swap="outerHTML"
+     {% endif %}>
+
+  <!-- Progress Bar Indicator -->
+  <div class="matrix-hero-card">
+    <div class="flex justify-between items-center mb-3">
+      <div>
+        <div class="eyebrow" style="margin-bottom:2px;">Session Status</div>
+        <h3 style="font-size:1.3rem;">
+          {% if batch.status == 'completed' %}
+          🎉 Matrix Complete — All {{ batch.total_pairs }} Combinations Fitted
+          {% else %}
+          ⏳ Generating Neural Fittings ({{ batch.completed_pairs }}/{{ batch.total_pairs }} Completed)...
+          {% endif %}
+        </h3>
+      </div>
+      <div class="text-right">
+        <span class="badge {% if batch.status == 'completed' %}badge-success{% else %}badge-warning{% endif %}" style="font-size:0.85rem; padding:6px 12px;">
+          {{ batch.status | upper }}
+        </span>
+      </div>
+    </div>
+
+    <!-- Progress Track -->
+    <div style="background:var(--accent-clay); height:10px; border-radius:var(--r-pill); overflow:hidden; position:relative;">
+      {% set pct = (batch.completed_pairs / batch.total_pairs * 100) if batch.total_pairs > 0 else 0 %}
+      <div style="background:linear-gradient(90deg, var(--ink), var(--accent-lime-text)); width:{{ pct }}%; height:100%; transition:width 0.4s var(--ease);"></div>
+    </div>
+  </div>
+
+  <!-- Matrix Grid -->
+  <div class="matrix-grid">
+    {% for p in pair_results %}
+    <div class="pair-card {% if p.casting_status == 'booked' %}status-booked{% elif p.casting_status == 'shortlisted' %}status-shortlisted{% endif %}" id="pair-card-{{ p.id }}">
+      
+      <!-- Preview Tile -->
+      <div class="pair-card-preview-area">
+        {% if p.status == 'success' and p.result_url %}
+          <img src="{{ p.result_url }}" alt="{{ p.product.title }} on {{ p.model.name }}" loading="lazy" />
+          <div class="pair-score-badge">
+            Fit Harmony {{ p.fit_score or 92 }}%
+          </div>
+        {% elif p.status == 'error' %}
+          <div class="tile-spinner-wrap" style="background:#261815;">
+            <span style="font-size:2rem;">⚠️</span>
+            <p class="text-xs muted" style="color:#f2d9cf; padding:0 var(--sp-4); text-align:center;">
+              {{ p.error_message or 'Neural fitting failed' }}
+            </p>
+          </div>
+        {% else %}
+          <div class="tile-spinner-wrap">
+            <div class="pulse-spinner"></div>
+            <div class="text-xs mono" style="letter-spacing:0.05em;">SYNTHESIZING FIT...</div>
+          </div>
+        {% endif %}
+
+        <!-- Sources mini thumbs -->
+        <div class="pair-card-sources-overlay">
+          <div class="pair-source-thumb" title="Model: {{ p.model.name }}">
+            <img src="{{ p.model.b2_url }}" alt="{{ p.model.name }}" />
+          </div>
+          <div class="pair-source-thumb" title="Garment: {{ p.product.title }}">
+            <img src="{{ p.product.b2_url }}" alt="{{ p.product.title }}" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Card Details & Actions -->
+      <div class="pair-card-body">
+        <div class="flex justify-between items-start">
+          <div>
+            <h4 style="margin-bottom:2px;">{{ p.model.name }}</h4>
+            <p class="text-xs muted">{{ p.product.title }} ({{ p.product.category | capitalize }})</p>
+          </div>
+          {% if p.status == 'success' and p.result_url %}
+          <button type="button" class="btn btn-ghost-dark btn-xs" 
+                  onclick="openCompare('{{ p.model.name }}', '{{ p.product.title }}', '{{ p.model.b2_url }}', '{{ p.product.b2_url }}', '{{ p.result_url }}')">
+            🔍 Compare
+          </button>
+          {% endif %}
+        </div>
+
+        <div class="text-xs muted flex justify-between">
+          <span>Undertone: <b>{{ p.model.undertone }}</b></span>
+          <span>Color: <b>{{ p.product.color or 'Multi' }}</b></span>
+        </div>
+
+        <!-- Casting Decision Buttons -->
+        {% if p.status == 'success' %}
+          {% include "brand/partials/decision_badge.html" %}
+        {% endif %}
+      </div>
+
+    </div>
+    {% endfor %}
+  </div>
+
+</div>

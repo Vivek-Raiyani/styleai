@@ -1,0 +1,27 @@
+{% set item = pair if (pair is defined and pair is not none) else p %}
+<div class="pair-casting-actions" id="decision-actions-{{ item.id }}">
+  <button type="button" 
+          class="casting-btn {% if item.casting_status == 'booked' %}active-booked{% endif %}"
+          hx-post="/brand/pair/{{ item.id }}/decision" 
+          hx-vals='{"status": "{% if item.casting_status == "booked" %}undecided{% else %}booked{% endif %}"}'
+          hx-target="#decision-actions-{{ item.id }}"
+          hx-swap="outerHTML">
+    ✓ Book
+  </button>
+  <button type="button" 
+          class="casting-btn {% if item.casting_status == 'shortlisted' %}active-shortlist{% endif %}"
+          hx-post="/brand/pair/{{ item.id }}/decision" 
+          hx-vals='{"status": "{% if item.casting_status == "shortlisted" %}undecided{% else %}shortlisted{% endif %}"}'
+          hx-target="#decision-actions-{{ item.id }}"
+          hx-swap="outerHTML">
+    ★ Shortlist
+  </button>
+  <button type="button" 
+          class="casting-btn {% if item.casting_status == 'passed' %}active-pass{% endif %}"
+          hx-post="/brand/pair/{{ item.id }}/decision" 
+          hx-vals='{"status": "{% if item.casting_status == "passed" %}undecided{% else %}passed{% endif %}"}'
+          hx-target="#decision-actions-{{ item.id }}"
+          hx-swap="outerHTML">
+    ✕ Pass
+  </button>
+</div>

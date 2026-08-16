@@ -1,0 +1,443 @@
+{% extends "base.html" %}
+{% block title %}Hair Studio — StyleAI Studio{% endblock %}
+{% block module_name %}hair{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <div class="eyebrow">03 / Hair Studio</div>
+    <h1>Hair color & style simulation.</h1>
+  </div>
+  <span class="pill pill-lime">Color & Transfer</span>
+</div>
+
+<div class="page-body">
+  <div class="content-max">
+    <div class="split split-narrow">
+
+      <!-- ── Left: Controls & Upload ───────────────────────── -->
+      <div>
+        <!-- Mode switcher tabs -->
+        <div class="flex gap-2 mb-4">
+          <button type="button" id="tab-color" class="btn btn-primary btn-sm" onclick="switchHairMode('color')">
+            🎨 Color & Ombré
+          </button>
+          <button type="button" id="tab-transfer" class="btn btn-secondary btn-sm" onclick="switchHairMode('transfer')">
+            ✂️ Hairstyle Transfer
+          </button>
+        </div>
+
+        <!-- Mode 1: Hair Color Form -->
+        <form id="hair-color-form" method="post" action="/hair/color/start" hx-post="/hair/color/start"
+          hx-target="#result-panel" hx-swap="innerHTML" hx-encoding="multipart/form-data" enctype="multipart/form-data">
+
+          <div class="upload-zone mb-4" id="hair-color-zone">
+            <div class="upload-content">
+              <span class="uz-icon">💇</span>
+              <div class="uz-title">Upload your photo</div>
+              <p class="uz-hint">Clear view of hair recommended</p>
+              <input type="file" name="selfie_file" id="hair_file" accept="image/jpeg,image/png,image/webp"
+                style="display:none;" />
+            </div>
+            <div class="upload-preview">
+              <img src="" alt="Preview" />
+              <button type="button" onclick="document.getElementById('hair_file').click()"
+                class="btn btn-secondary btn-sm">Change photo</button>
+            </div>
+          </div>
+
+          <div class="flex gap-3 mb-4">
+            <button type="button" class="camera-btn btn btn-secondary btn-sm">📷 Take Selfie</button>
+          </div>
+
+          <input type="hidden" name="base64_image" id="base64_image_hair" />
+
+          <!-- Color options -->
+          <div class="card mb-4">
+            <div class="form-group">
+              <label class="form-label">Style Pattern</label>
+              <select name="pattern" class="form-input form-select" id="hair-pattern"
+                onchange="toggleOmbre(this.value)">
+                <option value="full">Full Color</option>
+                <option value="ombre">Ombré (Two Tones)</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Primary Color</label>
+              <div class="flex gap-2 items-center">
+                <input type="color" name="color" id="primary-color-picker" value="#8c3a27"
+                  style="height:38px; width:50px; border-radius:6px; border:1px solid var(--border-mid); cursor:pointer;" />
+                <input type="text" id="primary-color-text" class="form-input" value="#8c3a27" style="flex:1;" />
+              </div>
+            </div>
+
+            <div class="form-group hidden" id="second-color-group">
+              <label class="form-label">Secondary (Bottom) Color</label>
+              <div class="flex gap-2 items-center">
+                <input type="color" name="second_color" id="second-color-picker" value="#e3a857"
+                  style="height:38px; width:50px; border-radius:6px; border:1px solid var(--border-mid); cursor:pointer;" />
+                <input type="text" id="second-color-text" class="form-input" value="#e3a857" style="flex:1;" />
+              </div>
+            </div>
+
+            <div class="grid-2">
+              <div class="form-group" style="margin-bottom:0;">
+                <label class="form-label">Color Intensity</label>
+                <input type="range" name="color_intensity" min="10" max="100" value="70" class="w-full" />
+              </div>
+              <div class="form-group" style="margin-bottom:0;">
+                <label class="form-label">Shine Intensity</label>
+                <input type="range" name="shine_intensity" min="0" max="100" value="50" class="w-full" />
+              </div>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-full btn-lg">Apply Hair Color <span
+              class="arrow">→</span></button>
+        </form>
+
+        <!-- Mode 2: Hair Style Transfer Form -->
+        <form id="hair-transfer-form" class="hidden" method="post" action="/hair/transfer/start"
+          hx-post="/hair/transfer/start" hx-target="#result-panel" hx-swap="innerHTML" hx-encoding="multipart/form-data"
+          enctype="multipart/form-data">
+
+          <div class="upload-zone mb-4" id="hair-transfer-zone">
+            <div class="upload-content">
+              <span class="uz-icon">👤</span>
+              <div class="uz-title">Upload your portrait</div>
+              <p class="uz-hint">Face and current hair visible</p>
+              <input type="file" name="selfie_file" id="transfer_src_file" accept="image/jpeg,image/png,image/webp"
+                style="display:none;" />
+            </div>
+            <div class="upload-preview">
+              <img src="" alt="Preview" />
+              <button type="button" onclick="document.getElementById('transfer_src_file').click()"
+                class="btn btn-secondary btn-sm">Change photo</button>
+            </div>
+          </div>
+
+          <div class="card mb-4">
+            <div class="flex justify-between items-center mb-2">
+              <label class="form-label" style="margin-bottom:0;">Select Reference Hairstyles</label>
+              <span class="pill pill-clay" id="hair-count-badge">{{ hairstyle_assets|length }} Available</span>
+            </div>
+
+            <!-- Single vs Batch Mode Switcher -->
+            <div class="flex gap-1 mb-3 p-1" style="background:var(--bg-cream); border-radius:var(--r-sm); border:1px solid var(--border-mid);">
+              <button type="button" id="hair-mode-single" class="btn btn-primary btn-sm flex-1" onclick="setHairSelectionMode('single')">
+                Single Hairstyle
+              </button>
+              <button type="button" id="hair-mode-batch" class="btn btn-ghost-dark btn-sm flex-1" onclick="setHairSelectionMode('batch')">
+                ✨ Multi-Style Comparison <span id="batch-selected-counter" class="pill pill-clay" style="margin-left:4px;">0/6</span>
+              </button>
+            </div>
+
+            <!-- Filter & Search Bar -->
+            <div class="flex gap-2 mb-3">
+              <input type="text" id="hair-search-input" class="form-input" placeholder="🔍 Search styles (e.g. Bob, Waves, Fade)..." oninput="filterHairCatalog()" />
+            </div>
+
+            <div class="flex gap-1 mb-2 flex-wrap">
+              <button type="button" class="btn btn-ghost-dark btn-xs hair-filter-btn active" onclick="setHairFilter('all', this)">All</button>
+              <button type="button" class="btn btn-ghost-dark btn-xs hair-filter-btn" onclick="setHairFilter('women', this)">Women / Long</button>
+              <button type="button" class="btn btn-ghost-dark btn-xs hair-filter-btn" onclick="setHairFilter('men', this)">Men / Short</button>
+            </div>
+
+            <!-- Hidden input for single mode -->
+            <input type="hidden" name="ref_asset_url" id="single-selected-hair-url" value="" />
+            
+            <!-- Dynamic hidden inputs container for batch mode -->
+            <div id="batch-inputs-container"></div>
+
+            {% if hairstyle_assets %}
+            <div id="hair-catalog-grid" class="grid-3 mb-3" style="max-height:280px; overflow-y:auto; padding-right:4px; gap:8px;">
+              {% for a in hairstyle_assets %}
+              <div class="hair-asset-card" data-url="{{ a.b2_url }}" data-name="{{ a.name|lower }}" data-meta="{{ a.meta_json or '' }}"
+                onclick="handleHairCardClick(this)"
+                style="cursor:pointer; border:2px solid var(--border-hairline); border-radius:var(--r-sm); overflow:hidden; display:block; background:var(--bg-card); transition:all 0.15s ease; position:relative; user-select:none;">
+                
+                <!-- Batch Check Badge Overlay -->
+                <div class="hair-check-badge hidden" style="position:absolute; top:4px; right:4px; width:20px; height:20px; border-radius:50%; background:var(--accent-lime, #a3e635); color:#000; font-size:0.7rem; font-weight:bold; display:flex; align-items:center; justify-content:center; z-index:2; box-shadow:0 2px 6px rgba(0,0,0,0.3);">
+                  ✓
+                </div>
+
+                <div style="position:relative; width:100%; aspect-ratio:3/4; overflow:hidden; background:#111;">
+                  <img src="{{ a.b2_url }}" alt="{{ a.name }}" loading="lazy" style="width:100%; height:100%; object-fit:cover; display:block; pointer-events:none;" />
+                </div>
+                <span style="font-size:0.7rem; padding:4px 3px; display:block; text-align:center; line-height:1.2; font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="{{ a.name }}">{{ a.name }}</span>
+              </div>
+              {% endfor %}
+            </div>
+            {% else %}
+            <p class="muted text-xs mb-3">No catalog styles uploaded yet. Upload a custom hairstyle reference below:</p>
+            {% endif %}
+
+            <div class="form-group" style="margin-bottom:0;" id="custom-ref-box">
+              <label class="form-label text-xs">Or Upload Custom Reference</label>
+              <input type="file" name="ref_file" class="form-input" accept="image/*" style="padding:6px; font-size:0.75rem;" />
+            </div>
+          </div>
+
+          <button type="submit" id="hair-transfer-submit-btn" class="btn btn-primary btn-full btn-lg">
+            Transfer Hairstyle <span class="arrow">→</span>
+          </button>
+        </form>
+
+      </div>
+
+      <!-- ── Right: Result panel ───────────────────────────── -->
+      <div>
+        <div id="result-panel">
+          <div class="card" style="text-align:center; padding:var(--sp-8); border-style:dashed;">
+            <div style="font-size:3rem; margin-bottom:var(--sp-4); opacity:0.3;">💇</div>
+            <p class="muted">Your simulated hair transformation will appear here.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  let hairSelectionMode = 'single'; // 'single' | 'batch'
+  let selectedBatchUrls = new Set();
+
+  function setHairSelectionMode(mode) {
+    hairSelectionMode = mode;
+    const btnSingle = document.getElementById('hair-mode-single');
+    const btnBatch = document.getElementById('hair-mode-batch');
+    const submitBtn = document.getElementById('hair-transfer-submit-btn');
+    const form = document.getElementById('hair-transfer-form');
+    const customBox = document.getElementById('custom-ref-box');
+    const singleInput = document.getElementById('single-selected-hair-url');
+    const batchContainer = document.getElementById('batch-inputs-container');
+
+    // Clear previous visual selections
+    document.querySelectorAll('.hair-asset-card').forEach(c => {
+      c.style.borderColor = 'var(--border-hairline)';
+      c.style.boxShadow = 'none';
+      const badge = c.querySelector('.hair-check-badge');
+      if (badge) badge.classList.add('hidden');
+    });
+    selectedBatchUrls.clear();
+    if (singleInput) singleInput.value = '';
+    if (batchContainer) batchContainer.innerHTML = '';
+    updateBatchCounter();
+
+    if (mode === 'single') {
+      btnSingle.className = 'btn btn-primary btn-xs flex-1';
+      btnBatch.className = 'btn btn-ghost-dark btn-xs flex-1';
+      submitBtn.innerHTML = 'Transfer Hairstyle <span class="arrow">→</span>';
+      form.setAttribute('action', '/hair/transfer/start');
+      form.setAttribute('hx-post', '/hair/transfer/start');
+      htmx.process(form);
+      if (customBox) customBox.style.display = 'block';
+    } else {
+      btnSingle.className = 'btn btn-ghost-dark btn-xs flex-1';
+      btnBatch.className = 'btn btn-primary btn-xs flex-1';
+      submitBtn.innerHTML = '✨ Compare Selected Hairstyles (0) →';
+      form.setAttribute('action', '/hair/transfer/batch');
+      form.setAttribute('hx-post', '/hair/transfer/batch');
+      htmx.process(form);
+      if (customBox) customBox.style.display = 'none';
+    }
+  }
+
+  function handleHairCardClick(card) {
+    const url = card.getAttribute('data-url');
+    const singleInput = document.getElementById('single-selected-hair-url');
+    const batchContainer = document.getElementById('batch-inputs-container');
+
+    if (hairSelectionMode === 'single') {
+      document.querySelectorAll('.hair-asset-card').forEach(c => {
+        c.style.borderColor = 'var(--border-hairline)';
+        c.style.boxShadow = 'none';
+      });
+      card.style.borderColor = 'var(--accent-lime, #a3e635)';
+      card.style.boxShadow = '0 0 0 2px var(--accent-lime, #a3e635)';
+      if (singleInput) singleInput.value = url;
+      if (batchContainer) batchContainer.innerHTML = '';
+    } else {
+      // Batch mode (max 6)
+      const badge = card.querySelector('.hair-check-badge');
+      if (selectedBatchUrls.has(url)) {
+        selectedBatchUrls.delete(url);
+        card.style.borderColor = 'var(--border-hairline)';
+        card.style.boxShadow = 'none';
+        if (badge) badge.classList.add('hidden');
+      } else {
+        if (selectedBatchUrls.size >= 6) {
+          alert('You can select up to 6 hairstyles for simultaneous comparison.');
+          return;
+        }
+        selectedBatchUrls.add(url);
+        card.style.borderColor = 'var(--accent-lime, #a3e635)';
+        card.style.boxShadow = '0 0 0 2px var(--accent-lime, #a3e635)';
+        if (badge) badge.classList.remove('hidden');
+      }
+
+      // Rebuild hidden inputs
+      if (batchContainer) {
+        batchContainer.innerHTML = '';
+        selectedBatchUrls.forEach(u => {
+          const inp = document.createElement('input');
+          inp.type = 'hidden';
+          inp.name = 'ref_asset_urls';
+          inp.value = u;
+          batchContainer.appendChild(inp);
+        });
+      }
+      if (singleInput) singleInput.value = '';
+      updateBatchCounter();
+    }
+  }
+
+  function updateBatchCounter() {
+    const count = selectedBatchUrls.size;
+    const badge = document.getElementById('batch-selected-counter');
+    if (badge) badge.innerText = `${count}/6`;
+    const submitBtn = document.getElementById('hair-transfer-submit-btn');
+    if (submitBtn && hairSelectionMode === 'batch') {
+      submitBtn.innerHTML = `✨ Compare ${count} Hairstyle${count === 1 ? '' : 's'} in Parallel →`;
+    }
+  }
+
+  function switchHairMode(mode) {
+    const colorForm = document.getElementById('hair-color-form');
+    const transferForm = document.getElementById('hair-transfer-form');
+    const tabColor = document.getElementById('tab-color');
+    const tabTransfer = document.getElementById('tab-transfer');
+
+    if (mode === 'color') {
+      colorForm.classList.remove('hidden');
+      transferForm.classList.add('hidden');
+      tabColor.className = 'btn btn-primary btn-sm';
+      tabTransfer.className = 'btn btn-secondary btn-sm';
+    } else {
+      colorForm.classList.add('hidden');
+      transferForm.classList.remove('hidden');
+      tabColor.className = 'btn btn-secondary btn-sm';
+      tabTransfer.className = 'btn btn-primary btn-sm';
+    }
+  }
+
+  function toggleOmbre(pattern) {
+    const ombreGroup = document.getElementById('second-color-group');
+    if (pattern === 'ombre') {
+      ombreGroup.classList.remove('hidden');
+    } else {
+      ombreGroup.classList.add('hidden');
+    }
+  }
+
+  // Sync color inputs
+  const pPick = document.getElementById('primary-color-picker');
+  const pText = document.getElementById('primary-color-text');
+  if (pPick && pText) {
+    pPick.addEventListener('input', () => pText.value = pPick.value);
+    pText.addEventListener('input', () => pPick.value = pText.value);
+  }
+
+  let currentGenderFilter = 'all';
+
+  function setHairFilter(type, btn) {
+    currentGenderFilter = type;
+    document.querySelectorAll('.hair-filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    filterHairCatalog();
+  }
+
+  function filterHairCatalog() {
+    const q = (document.getElementById('hair-search-input')?.value || '').toLowerCase().trim();
+    document.querySelectorAll('.hair-asset-card').forEach(card => {
+      const name = card.getAttribute('data-name') || '';
+      const meta = card.getAttribute('data-meta') || '';
+      
+      const matchesSearch = !q || name.includes(q);
+      let matchesCategory = true;
+      if (currentGenderFilter === 'women') {
+        matchesCategory = meta.includes('"collection": "women"') || meta.includes('Women');
+      } else if (currentGenderFilter === 'men') {
+        matchesCategory = meta.includes('"collection": "men"') || meta.includes('Men');
+      }
+
+      if (matchesSearch && matchesCategory) {
+        card.style.display = 'block';
+      } else {
+        card.style.display = 'none';
+      }
+    });
+  }
+
+  // ── In-Card Instant Recoloring Logic ─────────────────────────────
+
+  function toggleCardColorBar(idx) {
+    const bar = document.getElementById(`color-bar-${idx}`);
+    if (bar) {
+      bar.classList.toggle('hidden');
+    }
+  }
+
+  async function applyRecolorToCard(idx, sourceUrl, colorHex, label) {
+    const statusSpan = document.getElementById(`recolor-status-${idx}`);
+    const imgElem = document.getElementById(`result-img-${idx}`);
+    if (statusSpan) statusSpan.innerHTML = `<span class="spinner inline-block" style="width:10px; height:10px;"></span> Applying ${label}...`;
+
+    const formData = new FormData();
+    formData.append('source_image_url', sourceUrl);
+    formData.append('color', colorHex);
+    formData.append('pattern', 'full');
+    formData.append('color_intensity', '80');
+
+    try {
+      const res = await fetch('/hair/recolor/instant', { method: 'POST', body: formData });
+      const data = await res.json();
+      if (data.status === 'success' && data.url) {
+        if (imgElem) imgElem.src = data.url;
+        if (statusSpan) statusSpan.innerHTML = `<span style="color:var(--accent-lime);">✓ Applied ${label}</span>`;
+      } else {
+        if (statusSpan) statusSpan.innerHTML = `<span class="text-error">✕ ${data.error || 'Failed'}</span>`;
+      }
+    } catch (err) {
+      if (statusSpan) statusSpan.innerHTML = `<span class="text-error">✕ Network error</span>`;
+    }
+  }
+
+  async function applySingleRecolor(sourceUrl, colorHex, label) {
+    const statusSpan = document.getElementById('single-recolor-status');
+    const imgElem = document.getElementById('single-result-img');
+    const downloadLink = document.getElementById('single-download-link');
+    if (statusSpan) statusSpan.innerHTML = `<span class="spinner inline-block" style="width:10px; height:10px;"></span> Applying ${label}...`;
+
+    const formData = new FormData();
+    formData.append('source_image_url', sourceUrl);
+    formData.append('color', colorHex);
+    formData.append('pattern', 'full');
+    formData.append('color_intensity', '80');
+
+    try {
+      const res = await fetch('/hair/recolor/instant', { method: 'POST', body: formData });
+      const data = await res.json();
+      if (data.status === 'success' && data.url) {
+        if (imgElem) imgElem.src = data.url;
+        if (downloadLink) downloadLink.href = data.url;
+        if (statusSpan) statusSpan.innerHTML = `<span style="color:var(--accent-lime);">✓ Applied ${label}</span>`;
+      } else {
+        if (statusSpan) statusSpan.innerHTML = `<span class="text-error">✕ ${data.error || 'Failed'}</span>`;
+      }
+    } catch (err) {
+      if (statusSpan) statusSpan.innerHTML = `<span class="text-error">✕ Network error</span>`;
+    }
+  }
+</script>
+<style>
+.hair-filter-btn.active {
+  background: var(--text-heading);
+  color: var(--bg-cream);
+}
+</style>
+{% endblock %}

@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% block title %}History & Saved Looks — StyleAI Studio{% endblock %}
+{% block module_name %}history{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <div class="eyebrow">Vault</div>
+    <h1>Your Look History.</h1>
+  </div>
+  <span class="pill pill-lime">{{ results | length }} saved runs</span>
+</div>
+
+<div class="page-body">
+  <div class="content-max">
+
+    <!-- ── Filter Tabs ──────────────────────────────────────── -->
+    <div class="flex gap-2 mb-6 flex-wrap">
+      <a href="/history" class="pill {% if not module_filter %}pill-lime{% else %}pill-clay{% endif %}">
+        All Runs
+      </a>
+      {% for mod_key, info in module_labels.items() %}
+      <a href="/history?module={{ mod_key }}"
+         class="pill {% if module_filter == mod_key %}pill-lime{% else %}pill-clay{% endif %}">
+        {{ info.icon }} {{ info.label }}
+      </a>
+      {% endfor %}
+    </div>
+
+    <!-- ── Results Grid ─────────────────────────────────────── -->
+    {% if results %}
+    <div class="grid-3" style="align-items:stretch;">
+      {% for item in results %}
+      <div class="card" style="display:flex; flex-direction:column; padding:var(--sp-4); height:100%;">
+        
+        <!-- Header -->
+        <div class="flex justify-between items-center mb-3">
+          <div class="flex items-center gap-2">
+            <span style="font-size:1.2rem;">{{ item.icon }}</span>
+            <span style="font-weight:600; font-size:0.95rem;">{{ item.label }}</span>
+          </div>
+          <span class="muted text-xs mono">{{ item.created_at.strftime('%b %d, %H:%M') }}</span>
+        </div>
+
+        <!-- Preview Area -->
+        <div style="background:var(--bg-cream); border:1px solid var(--border-hairline); border-radius:var(--r-md); overflow:hidden; margin-bottom:var(--sp-3); flex:1; min-height:220px; display:flex; align-items:center; justify-content:center; position:relative;">
+          {% if item.result_url %}
+            <img src="{{ item.result_url }}" alt="{{ item.label }}" style="width:100%; height:100%; object-fit:cover; display:block;" loading="lazy" />
+          {% elif item.selfie_url %}
+            <div style="position:relative; width:100%; height:100%;">
+              <img src="{{ item.selfie_url }}" alt="Original Selfie" style="width:100%; height:100%; object-fit:cover; opacity:0.85;" loading="lazy" />
+              <div style="position:absolute; inset:0; background:rgba(28,27,23,0.5); backdrop-filter:blur(3px); display:flex; flex-direction:column; align-items:center; justify-content:center; padding:var(--sp-3); color:#fff; text-align:center;">
+                <span style="font-size:1.8rem; margin-bottom:4px;">{{ item.icon }}</span>
+                <span style="font-weight:600; font-size:0.9rem;">Diagnostic Report Saved</span>
+              </div>
+            </div>
+          {% else %}
+            <div class="muted text-sm text-center p-4">Analysis data saved</div>
+          {% endif %}
+        </div>
+
+        <!-- Actions -->
+        <div class="flex justify-between items-center pt-2 gap-2" style="border-top:1px solid var(--border-hairline);">
+          <button type="button"
+                  hx-get="/history/detail/{{ item.id }}"
+                  hx-target="#history-modal-container"
+                  hx-swap="innerHTML"
+                  class="btn btn-primary btn-sm"
+                  style="flex:1;">
+            🔍 View Results & Inputs
+          </button>
+
+          <form method="post" action="/history/delete/{{ item.id }}" onsubmit="return confirm('Remove this item from history?');">
+            <button type="submit" class="btn btn-ghost btn-sm" style="color:var(--c-error-fg);" title="Delete run">
+              🗑
+            </button>
+          </form>
+        </div>
+
+      </div>
+      {% endfor %}
+    </div>
+
+    <!-- Modal mount container -->
+    <div id="history-modal-container"></div>
+    {% else %}
+    <div class="card" style="text-align:center; padding:var(--sp-9); border-style:dashed;">
+      <div style="font-size:3.5rem; margin-bottom:var(--sp-4); opacity:0.35;">📜</div>
+      <h3>No saved runs yet</h3>
+      <p class="muted max-w-sm mb-6" style="margin:0 auto var(--sp-6) auto;">
+        Try our AI features — your skin scans, color palettes, virtual try-ons, and complete looks will automatically appear here.
+      </p>
+      <div class="flex gap-3 justify-center flex-wrap">
+        <a href="/skin" class="btn btn-primary">🧬 Start Skin Analysis</a>
+        <a href="/style" class="btn btn-secondary">🛍️ Virtual Try-On</a>
+      </div>
+    </div>
+    {% endif %}
+
+  </div>
+</div>
+{% endblock %}

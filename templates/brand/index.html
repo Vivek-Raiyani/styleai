@@ -1,0 +1,732 @@
+{% extends "base.html" %}
+{% block title %}Brand Studio — Pre-Shoot Casting & Fitting Matrix | StyleAI{% endblock %}
+{% block module_name %}brand{% endblock %}
+
+{% block content %}
+<div class="page-body">
+  <div class="content-max">
+
+    <!-- ── Brand Studio Header Banner ───────────────────────── -->
+    <div class="brand-header-banner">
+      <div class="eyebrow" style="color:var(--accent-lime);">B2B Fashion & Talent Studio</div>
+      <h1 style="color:#fff; margin-bottom:var(--sp-2);">Pre-Shoot <em>Casting & Fitting Matrix</em></h1>
+      <p style="color:rgba(255,255,255,0.75); max-width:680px; font-size:1rem; line-height:1.6;">
+        Visualize your designer collection on diverse models before booking physical photo shoots. 
+        Run automated AI virtual try-on combinations, assess fit harmony, and streamline talent casting decisions.
+      </p>
+    </div>
+
+    <!-- ── Key Stats Strip ─────────────────────────────────── -->
+    <div class="stat-strip mb-5">
+      <div class="stat-item">
+        <span class="stat-num serif">{{ stats.products }}</span>
+        <span class="stat-lbl">Catalog Garments</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-num serif">{{ stats.models }}</span>
+        <span class="stat-lbl">Active Model Roster</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-num serif">{{ stats.batches }}</span>
+        <span class="stat-lbl">Fitting Sessions Run</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-num serif" style="color:var(--accent-terracotta);">{{ stats.shortlisted }}</span>
+        <span class="stat-lbl">Shortlisted Talents</span>
+      </div>
+    </div>
+
+    <!-- ── Studio Navigation Tabs (Decluttered Mode) ───────── -->
+    <div class="studio-main-nav" id="studio-tab-nav">
+      <button type="button" class="studio-main-tab active" data-tab="matrix" onclick="switchStudioTab('matrix')">
+        <span>⚡ Launch Matrix</span>
+      </button>
+      <button type="button" class="studio-main-tab" data-tab="assets" onclick="switchStudioTab('assets')">
+        <span>📁 Asset Library</span>
+        <span class="tab-pill">{{ products|length + models|length }}</span>
+      </button>
+      <button type="button" class="studio-main-tab" data-tab="history" onclick="switchStudioTab('history')">
+        <span>📜 Fitting Sessions</span>
+        {% if batches %}
+        <span class="tab-pill">{{ batches|length }}</span>
+        {% endif %}
+      </button>
+    </div>
+
+    <!-- =======================================================
+         TAB 1: MATRIX GENERATOR
+         ======================================================= -->
+    <div id="section-matrix" class="studio-section">
+      <div class="card mb-6" style="border: 2px solid var(--border-mid);">
+        <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
+          <div>
+            <div class="eyebrow" style="margin-bottom:2px;">Step 1 & 2</div>
+            <h2 style="font-size:1.45rem;">Configure Fitting Session</h2>
+          </div>
+          <div class="flex gap-2">
+            <button type="button" class="btn btn-secondary btn-sm" onclick="openModal('upload-product-modal')">
+              + Add Garment
+            </button>
+            <button type="button" class="btn btn-secondary btn-sm" onclick="openModal('upload-model-modal')">
+              + Add Model
+            </button>
+          </div>
+        </div>
+
+        <!-- Mode Selector Tabs (The 2 Options) -->
+        <div class="mode-selector-tabs">
+          <button type="button" class="mode-tab-btn active" id="tab-item-to-models" onclick="switchBatchMode('item_to_models')">
+            <div class="mode-tab-icon">👔</div>
+            <div>
+              <div class="mode-tab-title">Option 1: 1 Product × Multiple Models</div>
+              <div class="mode-tab-sub">Hero Garment Casting — Test which model fits your signature piece best</div>
+            </div>
+          </button>
+          <button type="button" class="mode-tab-btn" id="tab-model-to-items" onclick="switchBatchMode('model_to_items')">
+            <div class="mode-tab-icon">👤</div>
+            <div>
+              <div class="mode-tab-title">Option 2: 1 Model × Multiple Products</div>
+              <div class="mode-tab-sub">Talent Lookbook — Preview a candidate model wearing your full collection</div>
+            </div>
+          </button>
+        </div>
+
+        <!-- Batch Form -->
+        <form action="/brand/batch/start" method="POST" id="batch-matrix-form">
+          <input type="hidden" name="mode" id="batch-mode-input" value="item_to_models">
+
+          <div class="form-group mb-5">
+            <label class="form-label" for="batch_title">Fitting Session Title (Optional)</label>
+            <input type="text" class="form-control" name="batch_title" id="batch_title" placeholder="e.g. Summer Haute Couture '26 Casting Matrix">
+          </div>
+
+          <!-- ── Mode 1 Container: 1 Product + Multiple Models ── -->
+          <div id="container-item-to-models">
+            <!-- Step 1: Pick 1 Product -->
+            <div class="mb-5">
+              <div class="flex items-center justify-between mb-2">
+                <label class="form-label mb-0" style="font-weight:700;">1. Select Target Garment (Pick 1):</label>
+                <span class="text-xs muted">Click card to select</span>
+              </div>
+              <div class="selectable-card-grid">
+                {% for p in products %}
+                <label class="selectable-card {% if loop.first %}selected{% endif %}" onclick="selectSingleCard(this, 'product')">
+                  <input type="radio" name="single_product_id" value="{{ p.id }}" {% if loop.first %}checked{% endif %}>
+                  <div class="selectable-card-img-wrap garment-wrap">
+                    <img src="{{ p.b2_url }}" alt="{{ p.title }}" class="selectable-card-img garment-img" onerror="this.onerror=null; this.src='https://plugins-media.makeupar.com/strapi/assets/small_clothes_reference_full_body_01_8190f45a28.png'" />
+                  </div>
+                  <div class="selectable-card-body">
+                    <div class="selectable-card-title">{{ p.title }}</div>
+                    <div class="selectable-card-meta">
+                      <span class="pill pill-clay">{{ p.category | capitalize }}</span>
+                      <span>{{ p.color or 'Multi' }}</span>
+                    </div>
+                    <div class="harmony-tag">SKU: {{ p.sku or 'FW26' }}</div>
+                  </div>
+                </label>
+                {% endfor %}
+              </div>
+            </div>
+
+            <!-- Step 2: Pick Multiple Models -->
+            <div class="mb-6">
+              <div class="flex items-center justify-between mb-3 flex-wrap gap-2">
+                <div>
+                  <label class="form-label mb-0" style="font-weight:700;">2. Select Models to Test (Select Multiple):</label>
+                  <div class="text-xs muted mt-1">Filter by gender or select models across diverse skin undertones.</div>
+                </div>
+                <div class="flex gap-2">
+                  <button type="button" class="btn btn-ghost-dark btn-sm" onclick="toggleSelectAll('selected_model_ids')">Select All Models</button>
+                </div>
+              </div>
+
+              <!-- Gender Filter Chips -->
+              {% set female_count = models | selectattr('gender', 'equalto', 'Female') | list | length %}
+              {% set male_count = models | selectattr('gender', 'equalto', 'Male') | list | length %}
+              <div class="flex items-center justify-between mb-3 flex-wrap gap-2">
+                <div class="filter-chips">
+                  <button type="button" class="filter-chip active" onclick="filterGridGender('models-grid-mode1', 'all', this)">
+                    All Models <span class="chip-count">{{ models | length }}</span>
+                  </button>
+                  <button type="button" class="filter-chip" onclick="filterGridGender('models-grid-mode1', 'Female', this)">
+                    👗 Female Models <span class="chip-count">{{ female_count }}</span>
+                  </button>
+                  <button type="button" class="filter-chip" onclick="filterGridGender('models-grid-mode1', 'Male', this)">
+                    👔 Male Models <span class="chip-count">{{ male_count }}</span>
+                  </button>
+                </div>
+                <span id="models-selected-counter" class="badge badge-primary text-xs mono">
+                  {{ models | length }} Selected
+                </span>
+              </div>
+
+              <div class="selectable-card-grid" id="models-grid-mode1">
+                {% for m in models %}
+                <label class="selectable-card selected" data-gender="{{ m.gender }}" onclick="toggleMultiCard(this)">
+                  <input type="checkbox" name="selected_model_ids" value="{{ m.id }}" checked>
+                  <div class="selectable-card-img-wrap">
+                    <img src="{{ m.b2_url }}" alt="{{ m.name }}" class="selectable-card-img model-img" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=600&q=80'" />
+                  </div>
+                  <div class="selectable-card-body">
+                    <div class="flex justify-between items-center">
+                      <div class="selectable-card-title">{{ m.name }}</div>
+                      <span class="gender-badge {% if m.gender == 'Female' %}gender-badge-female{% else %}gender-badge-male{% endif %}">
+                        {{ m.gender }}
+                      </span>
+                    </div>
+                    <div class="selectable-card-meta">
+                      <span class="undertone-chip">
+                        <span class="undertone-dot {% if 'Warm' in m.undertone or 'Bronze' in m.undertone %}dot-warm-golden{% elif 'Cool' in m.undertone %}dot-cool-rose{% elif 'Olive' in m.undertone %}dot-neutral-olive{% elif 'Peach' in m.undertone %}dot-fair-peach{% elif 'Slate' in m.undertone %}dot-neutral-olive{% else %}dot-deep-espresso{% endif %}"></span>
+                        {{ m.undertone }}
+                      </span>
+                      <span>{{ m.height or '5\'10' }}</span>
+                    </div>
+                    <div class="harmony-tag">
+                      {% if 'Warm' in m.undertone or 'Bronze' in m.undertone %}✦ Best with Camel & Earthy
+                      {% elif 'Cool' in m.undertone %}✦ Best with Navy & Emerald
+                      {% elif 'Olive' in m.undertone or 'Slate' in m.undertone %}✦ Highly Versatile Tone
+                      {% elif 'Peach' in m.undertone %}✦ Best with Sand & Pastels
+                      {% else %}✦ Striking Bold Contrast{% endif %}
+                    </div>
+                  </div>
+                </label>
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+
+          <!-- ── Mode 2 Container: 1 Model + Multiple Products ── -->
+          <div id="container-model-to-items" style="display:none;">
+            <!-- Step 1: Pick 1 Model -->
+            <div class="mb-5">
+              <div class="flex items-center justify-between mb-2">
+                <label class="form-label mb-0" style="font-weight:700;">1. Select Candidate Model (Pick 1):</label>
+                <span class="text-xs muted">Click card to select</span>
+              </div>
+
+              <!-- Gender Filter Chips -->
+              <div class="filter-chips mb-3">
+                <button type="button" class="filter-chip active" onclick="filterGridGender('models-grid-mode2', 'all', this)">
+                  All Models <span class="chip-count">{{ models | length }}</span>
+                </button>
+                <button type="button" class="filter-chip" onclick="filterGridGender('models-grid-mode2', 'Female', this)">
+                  👗 Female Models <span class="chip-count">{{ female_count }}</span>
+                </button>
+                <button type="button" class="filter-chip" onclick="filterGridGender('models-grid-mode2', 'Male', this)">
+                  👔 Male Models <span class="chip-count">{{ male_count }}</span>
+                </button>
+              </div>
+
+              <div class="selectable-card-grid" id="models-grid-mode2">
+                {% for m in models %}
+                <label class="selectable-card {% if loop.first %}selected{% endif %}" data-gender="{{ m.gender }}" onclick="selectSingleCard(this, 'model')">
+                  <input type="radio" name="single_model_id" value="{{ m.id }}" {% if loop.first %}checked{% endif %}>
+                  <div class="selectable-card-img-wrap">
+                    <img src="{{ m.b2_url }}" alt="{{ m.name }}" class="selectable-card-img model-img" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=600&q=80'" />
+                  </div>
+                  <div class="selectable-card-body">
+                    <div class="flex justify-between items-center">
+                      <div class="selectable-card-title">{{ m.name }}</div>
+                      <span class="gender-badge {% if m.gender == 'Female' %}gender-badge-female{% else %}gender-badge-male{% endif %}">
+                        {{ m.gender }}
+                      </span>
+                    </div>
+                    <div class="selectable-card-meta">
+                      <span class="undertone-chip">
+                        <span class="undertone-dot {% if 'Warm' in m.undertone or 'Bronze' in m.undertone %}dot-warm-golden{% elif 'Cool' in m.undertone %}dot-cool-rose{% elif 'Olive' in m.undertone %}dot-neutral-olive{% elif 'Peach' in m.undertone %}dot-fair-peach{% elif 'Slate' in m.undertone %}dot-neutral-olive{% else %}dot-deep-espresso{% endif %}"></span>
+                        {{ m.undertone }}
+                      </span>
+                      <span>{{ m.gender }}</span>
+                    </div>
+                  </div>
+                </label>
+                {% endfor %}
+              </div>
+            </div>
+
+            <!-- Step 2: Pick Multiple Products -->
+            <div class="mb-6">
+              <div class="flex items-center justify-between mb-3 flex-wrap gap-2">
+                <label class="form-label mb-0" style="font-weight:700;">2. Select Garments to Fit (Select Multiple):</label>
+                <div class="flex items-center gap-3">
+                  <span id="products-selected-counter" class="badge badge-primary text-xs mono">
+                    {{ products | length }} Selected
+                  </span>
+                  <button type="button" class="btn btn-ghost-dark btn-sm" onclick="toggleSelectAll('selected_product_ids', 'container-model-to-items')">Select / Deselect All</button>
+                </div>
+              </div>
+              <div class="selectable-card-grid">
+                {% for p in products %}
+                <label class="selectable-card selected" onclick="toggleMultiCard(this)">
+                  <input type="checkbox" name="selected_product_ids" value="{{ p.id }}" checked>
+                  <div class="selectable-card-img-wrap garment-wrap">
+                    <img src="{{ p.b2_url }}" alt="{{ p.title }}" class="selectable-card-img garment-img" onerror="this.onerror=null; this.src='https://plugins-media.makeupar.com/strapi/assets/small_clothes_reference_full_body_01_8190f45a28.png'" />
+                  </div>
+                  <div class="selectable-card-body">
+                    <div class="selectable-card-title">{{ p.title }}</div>
+                    <div class="selectable-card-meta">
+                      <span class="pill pill-clay">{{ p.category | capitalize }}</span>
+                      <span>{{ p.color or 'Multi' }}</span>
+                    </div>
+                    <div class="harmony-tag">SKU: {{ p.sku or 'FW26' }}</div>
+                  </div>
+                </label>
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+
+          <div class="flex items-center justify-between pt-4 flex-wrap gap-3" style="border-top:1px solid var(--border-hairline);">
+            <div class="text-sm muted">
+              ⚡ Automated fitting pipeline runs parallel neural synthesis with skin undertone analysis.
+            </div>
+            <button type="submit" class="btn btn-primary btn-lg">
+              🚀 Launch Pre-Shoot Fitting Matrix →
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- =======================================================
+         TAB 2: BRAND ASSET LIBRARY
+         ======================================================= -->
+    <div id="section-assets" class="studio-section hidden">
+      <!-- Garments Section -->
+      <div class="card mb-5">
+        <div class="flex justify-between items-center mb-4 flex-wrap gap-2">
+          <div>
+            <h3 style="font-size:1.3rem; margin-bottom:2px;">Collection Garments ({{ products | length }})</h3>
+            <p class="text-xs muted">Garments available for AI fitting simulation and lookbook generation.</p>
+          </div>
+          <button type="button" class="btn btn-primary btn-sm" onclick="openModal('upload-product-modal')">+ Upload Garment</button>
+        </div>
+
+        <div class="selectable-card-grid">
+          {% for p in products %}
+          <div class="selectable-card" style="cursor:default;">
+            <div class="selectable-card-img-wrap garment-wrap">
+              <img src="{{ p.b2_url }}" alt="{{ p.title }}" class="selectable-card-img garment-img" onerror="this.onerror=null; this.src='https://plugins-media.makeupar.com/strapi/assets/small_clothes_reference_full_body_01_8190f45a28.png'" />
+            </div>
+            <div class="selectable-card-body">
+              <div class="selectable-card-title">{{ p.title }}</div>
+              <div class="selectable-card-meta">
+                <span class="pill pill-clay">{{ p.category | capitalize }}</span>
+                <span>{{ p.color or 'Multi' }}</span>
+              </div>
+              {% if not p.is_preset %}
+              <form action="/brand/products/{{ p.id }}/delete" method="POST" class="mt-2" onsubmit="return confirm('Delete this garment?');">
+                <button type="submit" class="btn btn-danger btn-xs btn-full">Delete</button>
+              </form>
+              {% else %}
+              <div class="text-xs mono muted text-center mt-1">Preset Asset</div>
+              {% endif %}
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Models Section -->
+      <div class="card">
+        <div class="flex justify-between items-center mb-4 flex-wrap gap-2">
+          <div>
+            <h3 style="font-size:1.3rem; margin-bottom:2px;">Model Roster ({{ models | length }})</h3>
+            <p class="text-xs muted">Organized talent rosters separated by female and male castings.</p>
+          </div>
+          <button type="button" class="btn btn-primary btn-sm" onclick="openModal('upload-model-modal')">+ Upload Model</button>
+        </div>
+
+        <div class="filter-chips mb-4">
+          <button type="button" class="filter-chip active" onclick="filterGridGender('roster-models-grid', 'all', this)">
+            All Talent Roster <span class="chip-count">{{ models | length }}</span>
+          </button>
+          <button type="button" class="filter-chip" onclick="filterGridGender('roster-models-grid', 'Female', this)">
+            👗 Female Models <span class="chip-count">{{ female_count }}</span>
+          </button>
+          <button type="button" class="filter-chip" onclick="filterGridGender('roster-models-grid', 'Male', this)">
+            👔 Male Models <span class="chip-count">{{ male_count }}</span>
+          </button>
+        </div>
+
+        <div class="selectable-card-grid" id="roster-models-grid">
+          {% for m in models %}
+          <div class="selectable-card" data-gender="{{ m.gender }}" style="cursor:default;">
+            <div class="selectable-card-img-wrap">
+              <img src="{{ m.b2_url }}" alt="{{ m.name }}" class="selectable-card-img model-img" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=600&q=80'" />
+            </div>
+            <div class="selectable-card-body">
+              <div class="flex justify-between items-center">
+                <div class="selectable-card-title">{{ m.name }}</div>
+                <span class="gender-badge {% if m.gender == 'Female' %}gender-badge-female{% else %}gender-badge-male{% endif %}">
+                  {{ m.gender }}
+                </span>
+              </div>
+              <div class="selectable-card-meta">
+                <span class="undertone-chip">
+                  <span class="undertone-dot {% if 'Warm' in m.undertone or 'Bronze' in m.undertone %}dot-warm-golden{% elif 'Cool' in m.undertone %}dot-cool-rose{% elif 'Olive' in m.undertone %}dot-neutral-olive{% elif 'Peach' in m.undertone %}dot-fair-peach{% elif 'Slate' in m.undertone %}dot-neutral-olive{% else %}dot-deep-espresso{% endif %}"></span>
+                  {{ m.undertone }}
+                </span>
+                <span>{{ m.height or '5\'10' }}</span>
+              </div>
+              {% if not m.is_preset %}
+              <form action="/brand/models/{{ m.id }}/delete" method="POST" class="mt-2" onsubmit="return confirm('Delete this model?');">
+                <button type="submit" class="btn btn-danger btn-xs btn-full">Delete</button>
+              </form>
+              {% else %}
+              <div class="text-xs mono muted text-center mt-1">Preset Talent</div>
+              {% endif %}
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <!-- =======================================================
+         TAB 3: FITTING SESSIONS & HISTORY
+         ======================================================= -->
+    <div id="section-history" class="studio-section hidden">
+      <div class="card">
+        <div class="flex justify-between items-center mb-4 flex-wrap gap-2">
+          <div>
+            <h3 style="font-size:1.3rem; margin-bottom:2px;">Fitting Sessions & Lookbooks</h3>
+            <p class="text-xs muted">Review casting decisions, fit harmony rankings, and export lookbooks.</p>
+          </div>
+          <button type="button" class="btn btn-primary btn-sm" onclick="switchStudioTab('matrix')">+ New Fitting Matrix</button>
+        </div>
+
+        {% if batches %}
+        <div class="grid-3">
+          {% for b in batches %}
+          <a href="/brand/batch/{{ b.id }}" class="card card-hover" style="display:flex; flex-direction:column; justify-content:space-between; background:var(--bg-cream);">
+            <div>
+              <div class="flex justify-between items-center mb-3">
+                <span class="badge {% if b.status == 'completed' %}badge-success{% else %}badge-warning{% endif %}">
+                  {{ b.status | capitalize }}
+                </span>
+                <span class="text-xs mono muted">{{ b.created_at.strftime('%b %d, %H:%M') }}</span>
+              </div>
+              <h4 style="font-size:1.15rem; margin-bottom:var(--sp-2);">{{ b.title }}</h4>
+              <p class="text-xs muted">
+                Mode: {% if b.mode == 'item_to_models' %}1 Item × Multi-Model{% else %}1 Model × Multi-Item{% endif %}
+              </p>
+            </div>
+            <div class="mt-4 pt-3 flex justify-between items-center" style="border-top:1px solid var(--border-hairline);">
+              <span class="text-xs mono font-bold">{{ b.completed_pairs }} / {{ b.total_pairs }} Fits Ready</span>
+              <span class="btn btn-ghost-dark btn-sm">Open Matrix →</span>
+            </div>
+          </a>
+          {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center py-8">
+          <p class="text-sm muted mb-3">No fitting matrix sessions created yet.</p>
+          <button type="button" class="btn btn-primary btn-sm" onclick="switchStudioTab('matrix')">Launch Your First Fitting Matrix</button>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ── Upload Product Modal ──────────────────────────────── -->
+<div class="brand-compare-modal" id="upload-product-modal" style="display:none;">
+  <div class="card" style="max-width:520px; width:100%; background:var(--bg-cream-soft);">
+    <div class="flex justify-between items-center mb-4">
+      <h3>Add Collection Garment</h3>
+      <button type="button" class="camera-modal-close" onclick="closeModal('upload-product-modal')">✕</button>
+    </div>
+    <form action="/brand/products/upload" method="POST" enctype="multipart/form-data">
+      <div class="form-group mb-3">
+        <label class="form-label">Garment Name *</label>
+        <input type="text" name="title" class="form-control" placeholder="e.g. Silk Velvet Midi Dress" required>
+      </div>
+      <div class="grid-2 mb-3">
+        <div class="form-group">
+          <label class="form-label">Category</label>
+          <select name="category" class="form-control">
+            <option value="auto">Auto-Detect</option>
+            <option value="top">Tops / Shirts / Blazers</option>
+            <option value="dress">Dresses</option>
+            <option value="outerwear">Outerwear / Coats</option>
+            <option value="pants">Pants / Bottoms</option>
+            <option value="skirt">Skirts</option>
+            <option value="shoes">Shoes / Footwear</option>
+            <option value="bag">Luxury Handbags</option>
+            <option value="necklace">Necklaces</option>
+            <option value="earring">Earrings</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">SKU / Code</label>
+          <input type="text" name="sku" class="form-control" placeholder="e.g. SS26-004">
+        </div>
+      </div>
+      <div class="form-group mb-3">
+        <label class="form-label">Garment Image File (Clean background recommended)</label>
+        <input type="file" name="product_file" class="form-control" accept="image/*">
+      </div>
+      <div class="form-group mb-4">
+        <label class="form-label">Or Image URL</label>
+        <input type="url" name="product_url" class="form-control" placeholder="https://...">
+      </div>
+      <div class="flex justify-end gap-2">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('upload-product-modal')">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save Garment</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ── Upload Model Modal ────────────────────────────────── -->
+<div class="brand-compare-modal" id="upload-model-modal" style="display:none;">
+  <div class="card" style="max-width:520px; width:100%; background:var(--bg-cream-soft);">
+    <div class="flex justify-between items-center mb-4">
+      <h3>Add Model to Roster</h3>
+      <button type="button" class="camera-modal-close" onclick="closeModal('upload-model-modal')">✕</button>
+    </div>
+    <form action="/brand/models/upload" method="POST" enctype="multipart/form-data">
+      <div class="form-group mb-3">
+        <label class="form-label">Model Full Name *</label>
+        <input type="text" name="name" class="form-control" placeholder="e.g. Maya Lin" required>
+      </div>
+      <div class="grid-2 mb-3">
+        <div class="form-group">
+          <label class="form-label">Gender</label>
+          <select name="gender" class="form-control">
+            <option value="Female">Female</option>
+            <option value="Male">Male</option>
+            <option value="Non-Binary">Non-Binary</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Skin Undertone / Palette</label>
+          <select name="undertone" class="form-control">
+            <option value="Warm Golden">Warm Golden</option>
+            <option value="Cool Rose">Cool Rose</option>
+            <option value="Neutral Olive">Neutral Olive</option>
+            <option value="Deep Espresso">Deep Espresso</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group mb-3">
+        <label class="form-label">Height / Agency Stats</label>
+        <input type="text" name="height" class="form-control" placeholder="e.g. 5'10 / 178cm, Agency: Elite">
+      </div>
+      <div class="form-group mb-3">
+        <label class="form-label">Model Portfolio Image (Full body or waist-up)</label>
+        <input type="file" name="model_file" class="form-control" accept="image/*">
+      </div>
+      <div class="form-group mb-4">
+        <label class="form-label">Or Image URL</label>
+        <input type="url" name="model_url" class="form-control" placeholder="https://...">
+      </div>
+      <div class="flex justify-end gap-2">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('upload-model-modal')">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save Model</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// ── Studio Tab Switcher ──────────────────────────────────────
+function switchStudioTab(tabKey) {
+  document.querySelectorAll('.studio-main-tab').forEach(t => {
+    t.classList.toggle('active', t.getAttribute('data-tab') === tabKey);
+  });
+  document.querySelectorAll('.studio-section').forEach(s => {
+    s.classList.add('hidden');
+  });
+  const activeSec = document.getElementById(`section-${tabKey}`);
+  if (activeSec) activeSec.classList.remove('hidden');
+
+  if (history.replaceState) {
+    history.replaceState(null, null, `#${tabKey}`);
+  }
+}
+
+// ── Batch Matrix Mode Switcher ──────────────────────────────
+function switchBatchMode(mode) {
+  document.getElementById('batch-mode-input').value = mode;
+  const tabItem = document.getElementById('tab-item-to-models');
+  const tabModel = document.getElementById('tab-model-to-items');
+  const contItem = document.getElementById('container-item-to-models');
+  const contModel = document.getElementById('container-model-to-items');
+
+  if (mode === 'item_to_models') {
+    tabItem.classList.add('active');
+    tabModel.classList.remove('active');
+    contItem.style.display = 'block';
+    contModel.style.display = 'none';
+  } else {
+    tabModel.classList.add('active');
+    tabItem.classList.remove('active');
+    contItem.style.display = 'none';
+    contModel.style.display = 'block';
+  }
+  updateSelectionSummary();
+}
+
+function selectSingleCard(labelElem, groupType) {
+  const container = labelElem.closest('.selectable-card-grid');
+  container.querySelectorAll('.selectable-card').forEach(c => c.classList.remove('selected'));
+  labelElem.classList.add('selected');
+}
+
+function toggleMultiCard(labelElem) {
+  setTimeout(() => {
+    const cb = labelElem.querySelector('input[type="checkbox"]');
+    if (cb && cb.checked) {
+      labelElem.classList.add('selected');
+    } else {
+      labelElem.classList.remove('selected');
+    }
+    updateSelectionSummary();
+  }, 10);
+}
+
+function toggleSelectAll(checkboxName, containerId) {
+  const container = containerId ? document.getElementById(containerId) : document;
+  if (!container) return;
+
+  const cards = Array.from(container.querySelectorAll('.selectable-card')).filter(card => {
+    return card.style.display !== 'none' && !card.closest('[style*="display: none"]') && !card.closest('[style*="display:none"]');
+  });
+
+  const cbs = cards.map(c => c.querySelector(`input[name="${checkboxName}"]`)).filter(cb => cb && !cb.disabled);
+  if (cbs.length === 0) return;
+
+  const allChecked = cbs.every(cb => cb.checked);
+  cbs.forEach(cb => {
+    cb.checked = !allChecked;
+    const card = cb.closest('.selectable-card');
+    if (card) {
+      if (cb.checked) card.classList.add('selected');
+      else card.classList.remove('selected');
+    }
+  });
+
+  updateSelectionSummary();
+}
+
+function updateSelectionSummary() {
+  // Update Mode 1 models counter
+  const mode1Grid = document.getElementById('models-grid-mode1');
+  const modelCounter = document.getElementById('models-selected-counter');
+  if (mode1Grid && modelCounter) {
+    const checkedModels = mode1Grid.querySelectorAll('input[name="selected_model_ids"]:checked:not(:disabled)');
+    modelCounter.innerText = `${checkedModels.length} Selected`;
+    if (checkedModels.length === 0) {
+      modelCounter.className = 'badge badge-warning text-xs mono';
+    } else {
+      modelCounter.className = 'badge badge-primary text-xs mono';
+    }
+  }
+
+  // Update Mode 2 products counter
+  const prodCounter = document.getElementById('products-selected-counter');
+  const prodContainer = document.getElementById('container-model-to-items');
+  if (prodContainer && prodCounter) {
+    const checkedProds = prodContainer.querySelectorAll('input[name="selected_product_ids"]:checked:not(:disabled)');
+    prodCounter.innerText = `${checkedProds.length} Selected`;
+    if (checkedProds.length === 0) {
+      prodCounter.className = 'badge badge-warning text-xs mono';
+    } else {
+      prodCounter.className = 'badge badge-primary text-xs mono';
+    }
+  }
+}
+
+function filterGridGender(gridId, gender, btn) {
+  const container = document.getElementById(gridId);
+  if (!container) return;
+
+  const parentChips = btn.closest('.filter-chips');
+  if (parentChips) {
+    parentChips.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+    btn.classList.add('active');
+  }
+
+  const cards = container.querySelectorAll('.selectable-card');
+  cards.forEach(card => {
+    const cardGender = card.getAttribute('data-gender');
+    const isMatch = (gender === 'all' || cardGender === gender);
+    const cb = card.querySelector('input[type="checkbox"]');
+
+    if (isMatch) {
+      card.style.display = 'flex';
+      if (cb) {
+        cb.disabled = false;
+        cb.checked = true;
+        card.classList.add('selected');
+      }
+    } else {
+      card.style.display = 'none';
+      if (cb) {
+        cb.checked = false;
+        cb.disabled = true;
+        card.classList.remove('selected');
+      }
+    }
+  });
+
+  // If Mode 2 radio buttons: ensure a visible model is selected
+  const radios = container.querySelectorAll('input[type="radio"]');
+  if (radios.length > 0) {
+    const visibleCards = Array.from(cards).filter(c => c.style.display !== 'none');
+    const hasCheckedVisible = visibleCards.some(c => {
+      const r = c.querySelector('input[type="radio"]');
+      return r && r.checked;
+    });
+    if (!hasCheckedVisible && visibleCards.length > 0) {
+      cards.forEach(c => c.classList.remove('selected'));
+      const firstRadio = visibleCards[0].querySelector('input[type="radio"]');
+      if (firstRadio) {
+        firstRadio.checked = true;
+        visibleCards[0].classList.add('selected');
+      }
+    }
+  }
+
+  updateSelectionSummary();
+}
+
+// Check initial hash on load
+document.addEventListener('DOMContentLoaded', () => {
+  const hash = window.location.hash.replace('#', '');
+  if (['matrix', 'assets', 'history'].includes(hash)) {
+    switchStudioTab(hash);
+  }
+
+  updateSelectionSummary();
+
+  const form = document.getElementById('batch-matrix-form');
+  if (form) {
+    form.addEventListener('submit', (e) => {
+      const mode = document.getElementById('batch-mode-input').value;
+      if (mode === 'item_to_models') {
+        const checked = document.querySelectorAll('#models-grid-mode1 input[name="selected_model_ids"]:checked:not(:disabled)');
+        if (checked.length === 0) {
+          e.preventDefault();
+          alert('Please select at least 1 model before launching the fitting matrix.');
+          return false;
+        }
+      } else if (mode === 'model_to_items') {
+        const checked = document.querySelectorAll('#container-model-to-items input[name="selected_product_ids"]:checked:not(:disabled)');
+        if (checked.length === 0) {
+          e.preventDefault();
+          alert('Please select at least 1 garment before launching the lookbook matrix.');
+          return false;
+        }
+      }
+    });
+  }
+});
+</script>
+{% endblock %}

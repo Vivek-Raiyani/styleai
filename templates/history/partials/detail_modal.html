@@ -1,0 +1,201 @@
+<!-- History Run Detail Modal -->
+<div class="camera-modal-backdrop" id="history-detail-modal" style="display:flex; align-items:center; justify-content:center;">
+  <div class="camera-modal-card" style="max-width:720px; max-height:90vh; overflow-y:auto;">
+    
+    <!-- Modal Header -->
+    <div class="camera-modal-header">
+      <div class="flex items-center gap-2">
+        <span style="font-size:1.4rem;">{{ label_info.icon }}</span>
+        <div>
+          <h3 style="font-size:1.15rem; margin:0;">{{ label_info.label }} Run #{{ result.id }}</h3>
+          <span class="muted text-xs mono">{{ result.created_at.strftime('%B %d, %Y · %H:%M:%S') }}</span>
+        </div>
+      </div>
+      <button type="button" class="camera-modal-close" onclick="document.getElementById('history-detail-modal').remove()">✕</button>
+    </div>
+
+    <!-- Modal Body -->
+    <div class="camera-modal-body" style="flex-direction:column; padding:var(--sp-5); gap:var(--sp-5);">
+
+      <!-- ── SECTION 1: Inputs Used For This Run ───────────── -->
+      <div>
+        <div class="eyebrow mb-2">1 / Inputs & Parameters Used</div>
+        <div class="card" style="background:var(--bg-cream); padding:var(--sp-3) var(--sp-4);">
+          <div class="flex gap-4 items-center flex-wrap">
+            {% if selfie_url %}
+            <div style="text-align:center;">
+              <img src="{{ selfie_url }}" alt="Source Selfie" style="width:64px; height:64px; border-radius:var(--r-sm); object-fit:cover; border:1px solid var(--border-mid); background:#fff;" />
+              <span class="muted text-xs block mt-1">Source Selfie</span>
+            </div>
+            {% endif %}
+
+            {% if ref_url %}
+            <div style="text-align:center;">
+              <img src="{{ ref_url }}" alt="Reference Style / Asset" style="width:64px; height:64px; border-radius:var(--r-sm); object-fit:contain; border:1px solid var(--border-mid); background:#fff; padding:2px;" />
+              <span class="muted text-xs block mt-1">Selected Style / Item</span>
+            </div>
+            {% endif %}
+
+            <div style="flex:1; min-width:200px;">
+              <ul style="list-style:none; display:flex; flex-direction:column; gap:6px; font-size:0.85rem; margin:0; padding:0;">
+                {% if hair_colors_applied %}
+                <li class="flex justify-between items-center" style="border-bottom:1px dashed var(--border-hairline); padding-bottom:4px;">
+                  <span class="muted">Hair Colors:</span>
+                  <div class="flex gap-2 items-center">
+                    {% for c in hair_colors_applied %}
+                    <span class="flex items-center gap-1 mono text-xs" style="background:rgba(0,0,0,0.05); padding:2px 6px; border-radius:12px;">
+                      <span style="width:12px; height:12px; border-radius:50%; background:{{ c }}; display:inline-block; border:1px solid rgba(0,0,0,0.2);"></span>
+                      {{ c }}
+                    </span>
+                    {% endfor %}
+                  </div>
+                </li>
+                {% endif %}
+
+                {% if clean_params %}
+                  {% for k, v in clean_params.items() %}
+                    <li class="flex justify-between items-center" style="border-bottom:1px dashed var(--border-hairline); padding-bottom:4px;">
+                      <span class="muted">{{ k }}:</span>
+                      {% if '#' in v|string and (v|string)|length == 7 %}
+                      <span class="flex items-center gap-1 mono text-xs">
+                        <span style="width:12px; height:12px; border-radius:50%; background:{{ v }}; display:inline-block; border:1px solid #ccc;"></span>
+                        {{ v }}
+                      </span>
+                      {% else %}
+                      <span class="mono font-semibold text-xs" style="background:rgba(0,0,0,0.04); padding:2px 6px; border-radius:4px;">{{ v }}</span>
+                      {% endif %}
+                    </li>
+                  {% endfor %}
+                {% elif not hair_colors_applied and not ref_url %}
+                  <li class="muted text-xs">Standard analysis profile parameters</li>
+                {% endif %}
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── SECTION 2: AI Diagnostic / Transformation Results ── -->
+      <div>
+        <div class="eyebrow mb-2">2 / Result & AI Output</div>
+
+        <!-- Case A: Visual Transformation (Hair, Style, Eyes, Complete Look) -->
+        {% if result_url %}
+        <div class="grid-2 gap-4 mb-3">
+          {% if selfie_url %}
+          <div class="card" style="text-align:center; padding:var(--sp-2);">
+            <span class="pill pill-clay text-xs mb-2">Original Selfie</span>
+            <img src="{{ selfie_url }}" alt="Original" style="width:100%; max-height:260px; object-fit:cover; border-radius:var(--r-sm);" />
+          </div>
+          {% endif %}
+
+          <div class="card" style="text-align:center; padding:var(--sp-2); border-color:var(--accent-lime);">
+            <span class="pill pill-lime text-xs mb-2">AI Makeover Result</span>
+            <img src="{{ result_url }}" alt="Makeover Result" style="width:100%; max-height:260px; object-fit:cover; border-radius:var(--r-sm);" />
+          </div>
+        </div>
+        {% endif %}
+
+        <!-- Case B: Skin Health Metric Breakdown -->
+        {% if module == 'skin' and metrics %}
+        <div class="card mb-4">
+          <div class="flex justify-between items-center mb-4 pb-3" style="border-bottom:1px solid var(--border-hairline);">
+            <div>
+              <span class="muted text-xs">Overall Health Score</span>
+              <div class="serif" style="font-size:2.2rem; font-weight:700;">{{ overall_score or '—' }} <span class="text-sm font-normal muted">/ 100</span></div>
+            </div>
+            <div class="flex gap-2">
+              {% if skin_type %}
+              <span class="pill pill-terra">{{ skin_type }} Skin</span>
+              {% endif %}
+              {% if skin_age %}
+              <span class="pill pill-clay">Estimated Age: {{ skin_age | int }}</span>
+              {% endif %}
+            </div>
+          </div>
+
+          <div class="grid-2 gap-3">
+            {% for m in metrics %}
+            <div class="metric-bar">
+              <div class="metric-bar-head">
+                <span class="metric-name" style="font-size:0.8rem;">{{ m.label }}</span>
+                <span class="metric-score text-xs">{{ m.ui_score }}</span>
+              </div>
+              <div class="metric-track" style="height:6px;">
+                <div class="metric-fill {% if m.ui_score >= 75 %}good{% elif m.ui_score >= 50 %}mid{% else %}low{% endif %}"
+                     style="width: {{ m.ui_score }}%;"></div>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %}
+
+        <!-- Case C: Color DNA Palette Results -->
+        {% if module == 'palette' and undertone %}
+        <div class="card mb-4">
+          <div class="flex justify-between items-center mb-4">
+            <span class="serif" style="font-size:1.6rem; font-weight:700;">{{ undertone }} Undertone</span>
+            {% if skin_tone and skin_tone.pantone %}
+            <span class="pill pill-clay">Pantone {{ skin_tone.pantone }}</span>
+            {% endif %}
+          </div>
+
+          <div class="grid-4 gap-2 mb-4">
+            <div class="card p-2 text-center">
+              <div style="width:36px; height:36px; border-radius:50%; background:{{ skin_tone.hex or '#d9a37e' }}; margin:0 auto 4px; border:1px solid #ccc;"></div>
+              <span class="text-xs font-semibold block">Skin</span>
+              <span class="mono muted text-xs">{{ skin_tone.hex or '—' }}</span>
+            </div>
+            <div class="card p-2 text-center">
+              <div style="width:36px; height:36px; border-radius:50%; background:{{ hair_color.hex or '#3b2f2f' }}; margin:0 auto 4px; border:1px solid #ccc;"></div>
+              <span class="text-xs font-semibold block">Hair</span>
+              <span class="mono muted text-xs">{{ hair_color.hex or '—' }}</span>
+            </div>
+            <div class="card p-2 text-center">
+              <div style="width:36px; height:36px; border-radius:50%; background:{{ eye_color.hex or '#4a3b32' }}; margin:0 auto 4px; border:1px solid #ccc;"></div>
+              <span class="text-xs font-semibold block">Eyes</span>
+              <span class="mono muted text-xs">{{ eye_color.hex or '—' }}</span>
+            </div>
+            <div class="card p-2 text-center">
+              <div style="width:36px; height:36px; border-radius:50%; background:{{ lip_color.hex or '#b85d68' }}; margin:0 auto 4px; border:1px solid #ccc;"></div>
+              <span class="text-xs font-semibold block">Lips</span>
+              <span class="mono muted text-xs">{{ lip_color.hex or '—' }}</span>
+            </div>
+          </div>
+
+          {% if recommendations %}
+          <div class="eyebrow mb-2 text-xs">Curated Flattering Palette</div>
+          <div class="swatch-row">
+            {% for rec in recommendations %}
+            <div class="swatch" style="text-align:center; min-width:60px;">
+              <div class="swatch-dot" style="background:{{ rec.hex }}; width:32px; height:32px; margin:0 auto;"></div>
+              <span class="text-xs block mt-1" style="font-size:0.7rem;">{{ rec.name }}</span>
+            </div>
+            {% endfor %}
+          </div>
+          {% endif %}
+        </div>
+        {% endif %}
+
+      </div>
+
+    </div>
+
+    <!-- Modal Footer -->
+    <div class="camera-modal-footer flex justify-between items-center">
+      {% if result_url %}
+      <a href="{{ result_url }}" target="_blank" download="styleai_{{ module }}_{{ result.id }}.jpg" class="btn btn-primary btn-sm">
+        ⬇ Download High-Res Image
+      </a>
+      {% else %}
+      <div></div>
+      {% endif %}
+
+      <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('history-detail-modal').remove()">
+        Close Window
+      </button>
+    </div>
+
+  </div>
+</div>

@@ -1,0 +1,14 @@
+<!-- Polling partial — HTMX swaps this while YouCam processes -->
+<!-- hx-get polls /skin/status/{task_id} every 2s -->
+<div hx-get="/skin/status/{{ task_id }}?result_id={{ result_id }}"
+     hx-trigger="every 2s"
+     hx-target="#result-panel"
+     hx-swap="innerHTML">
+
+  <div class="spinner-wrap">
+    <div class="spinner-ring"></div>
+    <div class="spinner-label">Reading your skin…</div>
+    <div class="spinner-sub">AI is analysing 16 metrics · usually takes 5–15 seconds</div>
+  </div>
+
+</div>

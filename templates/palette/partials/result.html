@@ -1,0 +1,75 @@
+<div class="result-panel animate-fade-up">
+
+  <div class="score-hero mb-5">
+    <span class="score-sub" style="margin-bottom:var(--sp-2);">Detected Undertone</span>
+    <span class="serif" style="font-size:2.8rem; font-weight:700; color:var(--ink); display:block;">
+      {{ undertone }} Undertone
+    </span>
+    
+    <div style="display:flex; gap:var(--sp-3); justify-content:center; margin-top:var(--sp-4); flex-wrap:wrap;">
+      {% if skin_tone.pantone %}
+      <span class="pill pill-clay">Pantone: {{ skin_tone.pantone }}</span>
+      {% endif %}
+      {% if undertone == "Warm" %}
+      <span class="pill pill-terra">Golden & Warm Hues</span>
+      {% elif undertone == "Cool" %}
+      <span class="pill pill-lime">Rose & Cool Tones</span>
+      {% else %}
+      <span class="pill pill-neutral">Balanced Neutral</span>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- ── Extracted Natural DNA ────────────────────────── -->
+  <div class="eyebrow mb-4">Natural Feature Tones</div>
+  <div class="grid-4 mb-6">
+    <!-- Skin -->
+    <div class="card" style="text-align:center; padding:var(--sp-4);">
+      <div style="width:50px; height:50px; border-radius:50%; background:{{ skin_tone.hex or '#d9a37e' }}; margin:0 auto var(--sp-2); border:2px solid rgba(0,0,0,0.1);"></div>
+      <div style="font-weight:600; font-size:0.9rem;">Skin</div>
+      <div class="mono text-xs muted">{{ skin_tone.hex or '—' }}</div>
+    </div>
+
+    <!-- Hair -->
+    <div class="card" style="text-align:center; padding:var(--sp-4);">
+      <div style="width:50px; height:50px; border-radius:50%; background:{{ hair_color.hex or '#3b2f2f' }}; margin:0 auto var(--sp-2); border:2px solid rgba(0,0,0,0.1);"></div>
+      <div style="font-weight:600; font-size:0.9rem;">Hair</div>
+      <div class="mono text-xs muted">{{ hair_color.hex or '—' }}</div>
+    </div>
+
+    <!-- Eyes -->
+    <div class="card" style="text-align:center; padding:var(--sp-4);">
+      <div style="width:50px; height:50px; border-radius:50%; background:{{ eye_color.hex or '#4a3b32' }}; margin:0 auto var(--sp-2); border:2px solid rgba(0,0,0,0.1);"></div>
+      <div style="font-weight:600; font-size:0.9rem;">Eyes</div>
+      <div class="mono text-xs muted">{{ eye_color.hex or '—' }}</div>
+    </div>
+
+    <!-- Lips -->
+    <div class="card" style="text-align:center; padding:var(--sp-4);">
+      <div style="width:50px; height:50px; border-radius:50%; background:{{ lip_color.hex or '#b85d68' }}; margin:0 auto var(--sp-2); border:2px solid rgba(0,0,0,0.1);"></div>
+      <div style="font-weight:600; font-size:0.9rem;">Lips</div>
+      <div class="mono text-xs muted">{{ lip_color.hex or '—' }}</div>
+    </div>
+  </div>
+
+  <!-- ── Flattering Seasonal Recommendations ─────────── -->
+  <div class="eyebrow mb-4">Curated Harmonious Palette</div>
+  <div class="card mb-6">
+    <div class="swatch-row">
+      {% for rec in recommendations %}
+      <div class="swatch" style="flex:1; min-width:85px; text-align:center;">
+        <div class="swatch-dot" style="background:{{ rec.hex }}; width:48px; height:48px; margin:0 auto;"></div>
+        <div class="swatch-nm">{{ rec.name }}</div>
+        <div class="swatch-hex">{{ rec.hex }}</div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- ── Direct Next Steps ───────────────────────────── -->
+  <div class="flex gap-3 flex-wrap">
+    <a href="/hair?suggested={{ hair_color.hex | replace('#', '') if hair_color.hex else '' }}" class="btn btn-primary">Try flattering hair colors <span class="arrow">→</span></a>
+    <a href="/style" class="btn btn-secondary">Try matching outfits</a>
+  </div>
+
+</div>

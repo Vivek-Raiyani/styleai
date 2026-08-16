@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+{% block title %}StyleAI Studio — AI Beauty & Fashion{% endblock %}
+{% block module_name %}home{% endblock %}
+
+{% block content %}
+<div class="page-body">
+  <div class="content-max">
+
+    {% if not current_user %}
+    <!-- ── Landing hero (logged out) ───────────────────────── -->
+    <div class="hero">
+      <div class="eyebrow hero-eyebrow">StyleAI Studio · YouCam API</div>
+      <h1>One selfie.<br><em>Complete look.</em></h1>
+      <p class="hero-sub">
+        AI skin analysis, your personal color palette, hair color simulation,
+        eye lens try-on, and clothes VTO — all in one place, driven by a single photo.
+      </p>
+      <div class="hero-ctas">
+        <a href="/auth/guest" class="btn btn-primary btn-lg">Try for free <span class="arrow">→</span></a>
+        <a href="/auth/login" class="btn btn-secondary btn-lg">Sign in</a>
+      </div>
+    </div>
+
+    <!-- ── Stat strip ─────────────────────────────────────── -->
+    <div class="stat-strip mb-7">
+      <div class="stat-item">
+        <span class="stat-num serif">6</span>
+        <span class="stat-lbl">AI Features</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-num serif">16</span>
+        <span class="stat-lbl">Skin Metrics</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-num serif">1</span>
+        <span class="stat-lbl">Selfie needed</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-num serif">∞</span>
+        <span class="stat-lbl">Looks to try</span>
+      </div>
+    </div>
+
+    <!-- ── Feature grid ───────────────────────────────────── -->
+    <div class="eyebrow mb-4">What you can do</div>
+    <div class="grid-3 mb-7">
+      <a href="/skin" class="module-card card-hover">
+        <span class="mc-icon">🧬</span>
+        <div class="mc-title">Skin Analysis</div>
+        <p class="mc-desc">16-metric deep analysis of your skin — acne, firmness, wrinkles, dark circles and more. Know your skin today.</p>
+        <span class="mc-tag">16 metrics · skin age · type</span>
+      </a>
+      <a href="/palette" class="module-card card-hover">
+        <span class="mc-icon">🎨</span>
+        <div class="mc-title">Color Palette</div>
+        <p class="mc-desc">Extract your personal color DNA — actual hex codes for your skin, hair, eyes and lips. Know what colors flatter you.</p>
+        <span class="mc-tag">skin · hair · eye · lip</span>
+      </a>
+      <a href="/hair" class="module-card card-hover">
+        <span class="mc-icon">💇</span>
+        <div class="mc-title">Hair Studio</div>
+        <p class="mc-desc">Try full color, ombré, or a completely new hairstyle. Pick colors from your own palette or go bold.</p>
+        <span class="mc-tag">color · ombré · style transfer</span>
+      </a>
+      <a href="/eyes" class="module-card card-hover">
+        <span class="mc-icon">👁️</span>
+        <div class="mc-title">Eye Lens</div>
+        <p class="mc-desc">Virtual contact lens try-on with intensity, enlargement, and smoothing controls. The only platform offering this.</p>
+        <span class="mc-tag">natural · bold · fantasy</span>
+      </a>
+      <a href="/style" class="module-card card-hover">
+        <span class="mc-icon">🛍️</span>
+        <div class="mc-title">Virtual Try-On Suite</div>
+        <p class="mc-desc">Generative try-on for clothes, footwear, luxury handbags, necklaces, and earrings with precision lighting & depth.</p>
+        <span class="mc-tag">apparel · shoes · bags · jewelry</span>
+      </a>
+      <a href="/brand" class="module-card card-hover" style="border-color:var(--ink);background:linear-gradient(135deg,var(--dark-panel),#2b2820);color:var(--dark-panel-text);">
+        <span class="mc-icon">🏢</span>
+        <div class="mc-title" style="color:var(--accent-lime);">Brand Studio & Casting</div>
+        <p class="mc-desc" style="color:var(--dark-panel-muted);">Batch pre-shoot fitting matrix: test 1 item × multi-models or 1 model × multi-items to finalize casting before the shoot.</p>
+        <span class="mc-tag" style="background:rgba(255,255,255,0.1);color:var(--dark-panel-text);">B2B · batch matrix · lookbook</span>
+      </a>
+    </div>
+
+    <!-- ── Demo credentials ─────────────────────────────────── -->
+    <div class="dark-band">
+      <div class="eyebrow" style="color:var(--dark-panel-muted)">Try instantly</div>
+      <h3 style="color:var(--dark-panel-text); margin-bottom:var(--sp-3);">Demo account available</h3>
+      <p style="color:var(--dark-panel-muted); margin-bottom:var(--sp-5);">Pre-loaded with sample results so you can explore without uploading anything.</p>
+      <div style="font-family:'JetBrains Mono',monospace; font-size:0.85rem; background:rgba(255,255,255,0.06); border-radius:var(--r-md); padding:var(--sp-4) var(--sp-5); color:var(--dark-panel-text);">
+        <span style="color:var(--accent-lime);">email</span>: demo@styleai.com<br>
+        <span style="color:var(--accent-lime);">password</span>: demo1234
+      </div>
+      <div style="margin-top:var(--sp-5); display:flex; gap:var(--sp-3);">
+        <a href="/auth/guest" class="btn btn-primary">Continue as Guest <span class="arrow">→</span></a>
+        <a href="/auth/login" class="btn btn-secondary" style="border-color:rgba(255,255,255,0.15); color:var(--dark-panel-text);">Use demo account</a>
+      </div>
+    </div>
+
+    {% else %}
+    <!-- ── Dashboard (logged in) ────────────────────────────── -->
+    <div class="flex items-center justify-between mb-6">
+      <div>
+        <div class="eyebrow">Welcome back</div>
+        <h1>{{ current_user.username }}<em style="color:var(--accent-terracotta);">.</em></h1>
+      </div>
+      <div class="flex gap-2">
+        <a href="/brand" class="btn btn-primary btn-lg">🏢 Brand Studio Matrix <span class="arrow">→</span></a>
+      </div>
+    </div>
+
+    <!-- Quick actions -->
+    <div class="grid-3 mb-7">
+      <a href="/skin" class="module-card card-hover">
+        <span class="mc-icon">🧬</span>
+        <div class="mc-title">New Skin Analysis</div>
+        <p class="mc-desc">Upload a fresh selfie to get your 16-metric skin report.</p>
+      </a>
+      <a href="/palette" class="module-card card-hover">
+        <span class="mc-icon">🎨</span>
+        <div class="mc-title">Extract My Colors</div>
+        <p class="mc-desc">Find your personal hex palette from a selfie.</p>
+      </a>
+      <a href="/brand" class="module-card card-hover">
+        <span class="mc-icon">🏢</span>
+        <div class="mc-title">Brand Fitting Matrix</div>
+        <p class="mc-desc">Run batch casting fits on models before booking your shoot.</p>
+      </a>
+    </div>
+
+    {% if recent_results %}
+    <!-- Recent results -->
+    <div class="eyebrow mb-4">Recent results</div>
+    <div class="result-grid">
+      {% for r in recent_results %}
+      {% if r.result_url %}
+      <div class="result-thumb">
+        <img src="{{ r.result_url }}" alt="{{ r.module }} result" loading="lazy" />
+        <div class="result-thumb-info">
+          <div class="result-thumb-mod">{{ r.module }}</div>
+          <div class="result-thumb-date">{{ r.created_at.strftime('%b %d') }}</div>
+        </div>
+      </div>
+      {% endif %}
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="card" style="text-align:center; padding:var(--sp-8);">
+      <p class="muted" style="margin-bottom:var(--sp-4);">No results yet. Start with a skin analysis or virtual styling.</p>
+      <a href="/skin" class="btn btn-primary">Analyse my skin <span class="arrow">→</span></a>
+    </div>
+    {% endif %}
+    {% endif %}
+
+  </div>
+</div>
+{% endblock %}

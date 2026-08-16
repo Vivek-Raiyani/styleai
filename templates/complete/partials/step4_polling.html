@@ -1,0 +1,12 @@
+<div hx-get="/complete/step4/status/{{ task_id }}?result_id={{ result_id }}&selfie_url={{ selfie_url | urlencode }}&body_url={{ body_url | urlencode }}&facial_makeover_url={{ facial_makeover_url | urlencode }}&hair_color={{ hair_color | urlencode }}"
+     hx-trigger="every 2s"
+     hx-target="#result-panel"
+     hx-swap="innerHTML">
+
+  <div class="spinner-wrap">
+    <div class="spinner-ring"></div>
+    <div class="spinner-label">Step 4/4: Fitting Virtual Wardrobe & Garment…</div>
+    <div class="spinner-sub">Synthesizing fabric drape & torso fit on body photo</div>
+  </div>
+
+</div>

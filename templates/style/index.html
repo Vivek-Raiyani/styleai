@@ -1,0 +1,667 @@
+{% extends "base.html" %}
+{% block title %}Virtual Try-On Suite — Clothes, Shoes, Bags & Jewelry | StyleAI Studio{% endblock %}
+{% block module_name %}style{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <div class="eyebrow">05 / Virtual Try-On Suite</div>
+    <h1>Generative Fashion & Accessories VTO.</h1>
+  </div>
+  <span class="pill pill-lime" id="vto-badge-indicator">5 AI Try-On Engines Active</span>
+</div>
+
+<div class="page-body">
+  <div class="content-max">
+
+    <!-- ── Category Selector Tabs ───────────────────────────── -->
+    <div class="category-tabs-scroll">
+      <button type="button" class="category-tab-btn active" id="tab-btn-cloth" onclick="switchVtoCategory('cloth')">
+        👗 Apparel & Dresses
+      </button>
+      <button type="button" class="category-tab-btn" id="tab-btn-shoes" onclick="switchVtoCategory('shoes')">
+        👠 Shoes & Footwear
+      </button>
+      <button type="button" class="category-tab-btn" id="tab-btn-bag" onclick="switchVtoCategory('bag')">
+        👜 Luxury Handbags
+      </button>
+      <button type="button" class="category-tab-btn" id="tab-btn-necklace" onclick="switchVtoCategory('necklace')">
+        📿 Necklaces (2D VTO)
+      </button>
+      <button type="button" class="category-tab-btn" id="tab-btn-earring" onclick="switchVtoCategory('earring')">
+        ✨ Earrings (2D VTO)
+      </button>
+    </div>
+
+    <div class="split split-narrow">
+
+      <!-- ── Left: Controls & Options ───────────────────────── -->
+      <div>
+        <p class="muted text-sm mb-4" id="vto-description-text">
+          Fit any garment onto your body with realistic fabric draping, lighting matching, and posture preservation.
+        </p>
+
+        <form id="style-form"
+              method="post"
+              action="/style/start"
+              hx-post="/style/start"
+              hx-target="#result-panel"
+              hx-swap="innerHTML"
+              hx-encoding="multipart/form-data"
+              enctype="multipart/form-data">
+
+          <input type="hidden" name="tryon_type" id="tryon-type-input" value="cloth" />
+          <input type="hidden" name="preset_source_url" id="preset-source-input" value="" />
+          <input type="hidden" name="base64_image" id="base64_image_style" />
+
+          <!-- Step 1: Model / User Photo Upload -->
+          <div class="card mb-4">
+            <div class="flex justify-between items-center mb-2">
+              <label class="form-label mb-0 font-bold" id="model-slot-label">1. Upload Model / Target Photo</label>
+              <span class="text-xs muted" id="model-slot-hint">Full-body recommended</span>
+            </div>
+
+            <div class="upload-zone mb-3" id="model-zone" style="min-height:140px; padding:var(--sp-2);">
+              <div class="upload-content {% if latest_selfie %}hidden{% endif %}" id="model-upload-placeholder">
+                <span class="uz-icon" id="model-icon">🧍</span>
+                <div class="uz-title">Upload Photo</div>
+                <p class="uz-hint" id="model-hint">Drop photo here or click to browse</p>
+                <input type="file" name="selfie_file" id="style_model_file" accept="image/*" style="display:none;" 
+                       onchange="previewModelFile(this)" />
+              </div>
+              <div class="upload-preview {% if latest_selfie %}show{% endif %}" id="model-upload-preview">
+                <img id="model-preview-img" src="{{ latest_selfie.b2_url if latest_selfie else '' }}" alt="Model Preview" style="max-height:140px; object-fit:cover; border-radius:var(--r-sm);" />
+              </div>
+            </div>
+
+            <div class="flex justify-between items-center gap-2 flex-wrap">
+              <div class="flex gap-1">
+                <button type="button" class="btn btn-ghost-dark btn-xs" onclick="document.getElementById('style_model_file').click()">📁 Custom File</button>
+                <button type="button" class="btn btn-ghost-dark btn-xs" onclick="openCameraModal('style')">📷 Camera</button>
+              </div>
+              <div class="flex gap-1" id="preset-model-buttons">
+                <button type="button" class="btn btn-secondary btn-xs" onclick="setVtoModelPreset('https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=800&q=80', 'Studio Model F')">
+                  Studio F
+                </button>
+                <button type="button" class="btn btn-secondary btn-xs" onclick="setVtoModelPreset('https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=800&q=80', 'Studio Model M')">
+                  Studio M
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 2: Item Selection & Customization Container -->
+          <div class="card mb-4">
+            <div class="flex justify-between items-center mb-2">
+              <label class="form-label font-bold mb-0" id="item-slot-label">2. Select Items to Try On</label>
+              <span class="pill pill-clay text-xs" id="catalog-count-pill">{{ garment_assets|length }} items</span>
+            </div>
+
+            <!-- Single vs Multi-Item Mode Switcher -->
+            <div class="flex gap-1 mb-3 p-1" style="background:var(--bg-cream); border-radius:var(--r-sm); border:1px solid var(--border-mid);">
+              <button type="button" id="tryon-mode-single" class="btn btn-primary btn-sm flex-1" onclick="setTryonSelectionMode('single')">
+                Single Item
+              </button>
+              <button type="button" id="tryon-mode-batch" class="btn btn-ghost-dark btn-sm flex-1" onclick="setTryonSelectionMode('batch')">
+                ✨ Multi-Item Comparison <span id="batch-tryon-counter" class="pill pill-clay" style="margin-left:4px;">0/6</span>
+              </button>
+            </div>
+
+            <!-- Hidden Inputs for Form Submission -->
+            <input type="hidden" name="item_asset_url" id="single-item-url-input" value="{% if garment_assets %}{{ garment_assets[0].b2_url }}{% endif %}" />
+            <div id="batch-item-inputs"></div>
+
+            <!-- ── Dynamic Category Controls ── -->
+            
+            <!-- A. Cloth Options -->
+            <div id="options-cloth" class="vto-options-panel">
+              <div class="form-group mb-3">
+                <label class="form-label">Garment Category</label>
+                <select name="garment_category" class="form-input form-select">
+                  <option value="auto">Auto-Detect Category</option>
+                  <option value="upper_body">Upper Body (Tops, Shirts, Blazers)</option>
+                  <option value="lower_body">Lower Body (Pants, Skirts)</option>
+                  <option value="dresses">Dresses & Gowns</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- B. Shoes Options -->
+            <div id="options-shoes" class="vto-options-panel" style="display:none;">
+              <div class="grid-2 mb-3">
+                <div class="form-group">
+                  <label class="form-label">Gender</label>
+                  <select name="vto_gender" class="form-input form-select">
+                    <option value="female">Female</option>
+                    <option value="male">Male</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Styling Context</label>
+                  <select name="vto_style" class="form-input form-select">
+                    <option value="random">Auto / Natural</option>
+                    <option value="style_casual">Casual</option>
+                    <option value="style_formal">Formal / Evening</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <!-- C. Bag Options -->
+            <div id="options-bag" class="vto-options-panel" style="display:none;">
+              <div class="grid-2 mb-3">
+                <div class="form-group">
+                  <label class="form-label">Gender</label>
+                  <select name="vto_gender" class="form-input form-select">
+                    <option value="female">Female</option>
+                    <option value="male">Male</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Styling Aesthetic</label>
+                  <select name="vto_style" class="form-input form-select">
+                    <option value="style_parisian_chic">Parisian Chic</option>
+                    <option value="style_casual">Casual Lifestyle</option>
+                    <option value="style_streetwear">Streetwear Minimal</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <!-- D. Necklace Options -->
+            <div id="options-necklace" class="vto-options-panel" style="display:none;">
+              <div class="grid-2 mb-3">
+                <div class="form-group">
+                  <label class="form-label">Shadow Depth (0.0 - 1.0)</label>
+                  <input type="range" name="shadow_intensity" min="0" max="1" step="0.1" value="0.5" class="form-input" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Ambient Light Intensity</label>
+                  <input type="range" name="ambient_intensity" min="0" max="1" step="0.1" value="0.5" class="form-input" />
+                </div>
+              </div>
+            </div>
+
+            <!-- E. Earring Options -->
+            <div id="options-earring" class="vto-options-panel" style="display:none;">
+              <div class="grid-2 mb-3">
+                <div class="form-group">
+                  <label class="form-label">Target Ear Placement</label>
+                  <select name="is_right_ear" class="form-input form-select">
+                    <option value="true">Right Ear</option>
+                    <option value="false">Left Ear</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Ambient Light (0.0 - 1.0)</label>
+                  <input type="range" name="ambient_intensity" min="0" max="1" step="0.1" value="1.0" class="form-input" />
+                </div>
+              </div>
+            </div>
+
+            <!-- Clothes Subcategory Filter Pills -->
+            <div id="cloth-subcat-bar" class="subcat-chips-scroll">
+              <button type="button" class="btn btn-ghost-dark btn-xs cloth-filter-btn active" onclick="filterGarments('all', this)">All ({{ garment_assets|length }})</button>
+              <button type="button" class="btn btn-ghost-dark btn-xs cloth-filter-btn" onclick="filterGarments('full_body', this)">👗 Full Body</button>
+              <button type="button" class="btn btn-ghost-dark btn-xs cloth-filter-btn" onclick="filterGarments('upper_body', this)">👕 Tops</button>
+              <button type="button" class="btn btn-ghost-dark btn-xs cloth-filter-btn" onclick="filterGarments('lower_body', this)">👖 Bottoms</button>
+              <button type="button" class="btn btn-ghost-dark btn-xs cloth-filter-btn" onclick="filterGarments('outerwear', this)">🧥 Outerwear</button>
+            </div>
+            
+            <div class="grid-3 mb-3 catalog-items-grid" id="grid-cloth" style="max-height:300px; overflow-y:auto; padding-right:4px; gap:8px;">
+              {% for a in garment_assets %}
+              <div class="vto-item-card garment-card {% if loop.first %}selected{% endif %}" data-url="{{ a.b2_url }}" data-meta="{{ a.meta_json or '' }}" onclick="handleTryonCardClick(this)">
+                <div class="item-check-badge hidden">✓</div>
+                <div class="vto-img-wrap">
+                  <img src="{{ a.b2_url }}" alt="{{ a.name }}" loading="lazy" />
+                </div>
+                <span class="vto-item-name" title="{{ a.name }}">{{ a.name }}</span>
+              </div>
+              {% endfor %}
+            </div>
+
+            <div class="grid-3 mb-3 catalog-items-grid" id="grid-shoes" style="display:none; max-height:300px; overflow-y:auto; padding-right:4px; gap:8px;">
+              {% for a in shoes_assets %}
+              <div class="vto-item-card" data-url="{{ a.b2_url }}" onclick="handleTryonCardClick(this)">
+                <div class="item-check-badge hidden">✓</div>
+                <div class="vto-img-wrap">
+                  <img src="{{ a.b2_url }}" alt="{{ a.name }}" loading="lazy" />
+                </div>
+                <span class="vto-item-name" title="{{ a.name }}">{{ a.name }}</span>
+              </div>
+              {% endfor %}
+            </div>
+
+            <div class="grid-3 mb-3 catalog-items-grid" id="grid-bag" style="display:none; max-height:300px; overflow-y:auto; padding-right:4px; gap:8px;">
+              {% for a in bag_assets %}
+              <div class="vto-item-card" data-url="{{ a.b2_url }}" onclick="handleTryonCardClick(this)">
+                <div class="item-check-badge hidden">✓</div>
+                <div class="vto-img-wrap">
+                  <img src="{{ a.b2_url }}" alt="{{ a.name }}" loading="lazy" />
+                </div>
+                <span class="vto-item-name" title="{{ a.name }}">{{ a.name }}</span>
+              </div>
+              {% endfor %}
+            </div>
+
+            <div class="grid-3 mb-3 catalog-items-grid" id="grid-necklace" style="display:none; max-height:300px; overflow-y:auto; padding-right:4px; gap:8px;">
+              {% for a in necklace_assets %}
+              <div class="vto-item-card" data-url="{{ a.b2_url }}" onclick="handleTryonCardClick(this)">
+                <div class="item-check-badge hidden">✓</div>
+                <div class="vto-img-wrap">
+                  <img src="{{ a.b2_url }}" alt="{{ a.name }}" loading="lazy" />
+                </div>
+                <span class="vto-item-name" title="{{ a.name }}">{{ a.name }}</span>
+              </div>
+              {% endfor %}
+            </div>
+
+            <div class="grid-3 mb-3 catalog-items-grid" id="grid-earring" style="display:none; max-height:300px; overflow-y:auto; padding-right:4px; gap:8px;">
+              {% for a in earring_assets %}
+              <div class="vto-item-card" data-url="{{ a.b2_url }}" onclick="handleTryonCardClick(this)">
+                <div class="item-check-badge hidden">✓</div>
+                <div class="vto-img-wrap">
+                  <img src="{{ a.b2_url }}" alt="{{ a.name }}" loading="lazy" />
+                </div>
+                <span class="vto-item-name" title="{{ a.name }}">{{ a.name }}</span>
+              </div>
+              {% endfor %}
+            </div>
+
+            <!-- Custom File Upload Option -->
+            <div class="form-group mt-3" style="margin-bottom:0; border-top:1px solid var(--border-hairline); padding-top:var(--sp-3);" id="custom-tryon-file-box">
+              <label class="form-label text-xs">Or Upload Your Own Custom Item (JPG/PNG)</label>
+              <input type="file" name="custom_item_file" id="custom-item-file-input" class="form-input" accept="image/*" style="padding:6px;" />
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-full btn-lg" id="vto-submit-btn">
+            🚀 Launch Virtual Try-On <span class="arrow">→</span>
+          </button>
+        </form>
+      </div>
+
+      <!-- ── Right: Result Panel ────────────────────────────── -->
+      <div>
+        <div id="result-panel">
+          <div class="card" style="text-align:center; padding:var(--sp-8); border-style:dashed;">
+            <div style="font-size:3.2rem; margin-bottom:var(--sp-3); opacity:0.35;" id="result-placeholder-icon">👗</div>
+            <h3 style="font-size:1.15rem; margin-bottom:var(--sp-1);" id="result-placeholder-title">Virtual Try-On Suite</h3>
+            <p class="muted text-xs" style="max-width:320px; margin:0 auto;" id="result-placeholder-desc">
+              Select a garment, footwear, handbag, or jewelry piece and launch the AI virtual try-on engine.
+            </p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const VTO_CONFIG = {
+  cloth: {
+    badge: 'cloth-v4 AI',
+    title: 'Generative Apparel Try-On',
+    desc: 'Fit any garment onto your body with realistic fabric draping, lighting matching, and posture preservation.',
+    icon: '👗',
+    modelSlotLabel: '1. Target Model / Full-Body Photo',
+    modelSlotHint: 'Standing or waist-up pose',
+    itemSlotLabel: '2. Select Garment or Upload Outfit',
+    submitText: '👗 Launch Apparel Try-On →',
+    presetModel: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=800&q=80',
+  },
+  shoes: {
+    badge: 'YouCam Shoes VTO (v2.0)',
+    title: 'Generative Footwear Try-On',
+    desc: 'Try on stilettos, sneakers, and boots on full-body or standing model photos.',
+    icon: '👠',
+    modelSlotLabel: '1. Standing Model Photo (Visible Legs & Feet)',
+    modelSlotHint: 'Full-body photo with feet in frame',
+    itemSlotLabel: '2. Select Shoes or Upload Footwear',
+    submitText: '👠 Launch Footwear Try-On →',
+    presetModel: 'https://plugins-media.makeupar.com/strapi/assets/user_1_fcbc175652.jpg',
+  },
+  bag: {
+    badge: 'YouCam Luxury Bag VTO',
+    title: 'Luxury Handbag Try-On',
+    desc: 'Drape designer shoulder bags, totes, and crossbodies realistically over full-body or half-body photos.',
+    icon: '👜',
+    modelSlotLabel: '1. Model / Lifestyle Portrait',
+    modelSlotHint: 'Upper or full-body pose',
+    itemSlotLabel: '2. Select Bag or Upload Luxury Handbag',
+    submitText: '👜 Launch Bag Try-On →',
+    presetModel: 'https://plugins-media.makeupar.com/strapi/assets/user_1_fcbc175652.jpg',
+  },
+  necklace: {
+    badge: 'YouCam 2D Necklace VTO',
+    title: 'Necklace Virtual Try-On',
+    desc: 'Align diamond pendants and chains to your neck and decolletage with shadow and ambient light controls.',
+    icon: '📿',
+    modelSlotLabel: '1. Portrait / Decolletage Photo',
+    modelSlotHint: 'Clear neckline & shoulders',
+    itemSlotLabel: '2. Select Necklace or Upload Jewelry',
+    submitText: '📿 Launch Necklace VTO →',
+    presetModel: 'https://cdn.pixabay.com/photo/2018/04/04/10/11/woman-3289372_1280.jpg',
+  },
+  earring: {
+    badge: 'YouCam 2D Earring VTO',
+    title: 'Earrings Virtual Try-On',
+    desc: 'Try on drop earrings and studs with precise earlobe positioning and left/right ear selection.',
+    icon: '✨',
+    modelSlotLabel: '1. Face & Ear Portrait',
+    modelSlotHint: 'Clear ear visibility',
+    itemSlotLabel: '2. Select Earrings or Upload Earring Pair',
+    submitText: '✨ Launch Earring VTO →',
+    presetModel: 'https://plugins-media.makeupar.com/strapi/assets/earring_user_01_05727a3c72.png',
+  },
+};
+
+function switchVtoCategory(category) {
+  document.getElementById('tryon-type-input').value = category;
+
+  // 1. Update Tab Buttons
+  ['cloth', 'shoes', 'bag', 'necklace', 'earring'].forEach(cat => {
+    const btn = document.getElementById(`tab-btn-${cat}`);
+    if (btn) {
+      if (cat === category) {
+        btn.classList.add('active');
+      } else {
+        btn.classList.remove('active');
+      }
+    }
+  });
+
+  // 2. Update Options Panels
+  document.querySelectorAll('.vto-options-panel').forEach(p => p.style.display = 'none');
+  const optPanel = document.getElementById(`options-${category}`);
+  if (optPanel) optPanel.style.display = 'block';
+
+  // 3. Update Item Catalog Grids
+  document.querySelectorAll('.catalog-items-grid').forEach(g => g.style.display = 'none');
+  const subcatBar = document.getElementById('cloth-subcat-bar');
+  if (subcatBar) subcatBar.style.display = (category === 'cloth') ? 'flex' : 'none';
+
+  const itemGrid = document.getElementById(`grid-${category}`);
+  if (itemGrid) {
+    itemGrid.style.display = 'grid';
+    // Select first item in active grid if none selected in single mode
+    if (tryonSelectionMode === 'single') {
+      const selected = itemGrid.querySelector('.vto-item-card.selected');
+      if (!selected) {
+        const firstCard = itemGrid.querySelector('.vto-item-card:not([style*="display: none"])');
+        if (firstCard) handleTryonCardClick(firstCard);
+      }
+    }
+  }
+
+  // 4. Update Header and Text
+  const conf = VTO_CONFIG[category] || VTO_CONFIG.cloth;
+  document.getElementById('vto-badge-indicator').innerText = conf.badge;
+  document.getElementById('vto-description-text').innerText = conf.desc;
+  document.getElementById('model-slot-label').innerText = conf.modelSlotLabel;
+  document.getElementById('model-slot-hint').innerText = conf.modelSlotHint;
+  document.getElementById('item-slot-label').innerText = conf.itemSlotLabel;
+  if (tryonSelectionMode === 'single') {
+    document.getElementById('vto-submit-btn').innerHTML = conf.submitText;
+  }
+  document.getElementById('result-placeholder-icon').innerText = conf.icon;
+  document.getElementById('result-placeholder-title').innerText = conf.title;
+  document.getElementById('result-placeholder-desc').innerText = conf.desc;
+
+  // If no user selfie uploaded yet, set default high quality preset model for this category
+  const previewImg = document.getElementById('model-preview-img');
+  if (!previewImg.src || previewImg.src.includes('undefined') || previewImg.src === window.location.href) {
+    setVtoModelPreset(conf.presetModel, 'Sample Model');
+  }
+}
+
+let tryonSelectionMode = 'single'; // 'single' | 'batch'
+let selectedBatchItemUrls = new Set();
+
+function setTryonSelectionMode(mode) {
+  tryonSelectionMode = mode;
+  const btnSingle = document.getElementById('tryon-mode-single');
+  const btnBatch = document.getElementById('tryon-mode-batch');
+  const submitBtn = document.getElementById('vto-submit-btn');
+  const form = document.getElementById('vto-form');
+  const singleInput = document.getElementById('single-item-url-input');
+  const batchContainer = document.getElementById('batch-item-inputs');
+  const customBox = document.getElementById('custom-tryon-file-box');
+
+  // Clear selections
+  document.querySelectorAll('.vto-item-card').forEach(c => {
+    c.classList.remove('selected');
+    const badge = c.querySelector('.item-check-badge');
+    if (badge) badge.classList.add('hidden');
+  });
+  selectedBatchItemUrls.clear();
+  if (singleInput) singleInput.value = '';
+  if (batchContainer) batchContainer.innerHTML = '';
+  updateTryonBatchCounter();
+
+  if (mode === 'single') {
+    btnSingle.className = 'btn btn-primary btn-xs flex-1';
+    btnBatch.className = 'btn btn-ghost-dark btn-xs flex-1';
+    const conf = VTO_CONFIG[activeCategory] || VTO_CONFIG.cloth;
+    submitBtn.innerHTML = conf.submitText;
+    form.setAttribute('action', '/style/start');
+    form.setAttribute('hx-post', '/style/start');
+    htmx.process(form);
+    if (customBox) customBox.style.display = 'block';
+
+    // Auto select first visible card
+    const grid = document.getElementById(`grid-${activeCategory}`);
+    if (grid) {
+      const firstCard = grid.querySelector('.vto-item-card:not([style*="display: none"])');
+      if (firstCard) handleTryonCardClick(firstCard);
+    }
+  } else {
+    btnSingle.className = 'btn btn-ghost-dark btn-xs flex-1';
+    btnBatch.className = 'btn btn-primary btn-xs flex-1';
+    submitBtn.innerHTML = '✨ Compare Selected Items (0) →';
+    form.setAttribute('action', '/style/batch/start');
+    form.setAttribute('hx-post', '/style/batch/start');
+    htmx.process(form);
+    if (customBox) customBox.style.display = 'none';
+  }
+}
+
+function handleTryonCardClick(cardElem) {
+  const url = cardElem.getAttribute('data-url');
+  const singleInput = document.getElementById('single-item-url-input');
+  const batchContainer = document.getElementById('batch-item-inputs');
+
+  if (tryonSelectionMode === 'single') {
+    const container = cardElem.closest('.catalog-items-grid');
+    if (container) {
+      container.querySelectorAll('.vto-item-card').forEach(c => c.classList.remove('selected'));
+    }
+    cardElem.classList.add('selected');
+    if (singleInput) singleInput.value = url;
+    if (batchContainer) batchContainer.innerHTML = '';
+
+    // Clear custom file input
+    const customInput = document.getElementById('custom-item-file-input');
+    if (customInput) customInput.value = '';
+  } else {
+    // Batch mode (up to 6)
+    const badge = cardElem.querySelector('.item-check-badge');
+    if (selectedBatchItemUrls.has(url)) {
+      selectedBatchItemUrls.delete(url);
+      cardElem.classList.remove('selected');
+      if (badge) badge.classList.add('hidden');
+    } else {
+      if (selectedBatchItemUrls.size >= 6) {
+        alert('You can select up to 6 items for simultaneous comparison.');
+        return;
+      }
+      selectedBatchItemUrls.add(url);
+      cardElem.classList.add('selected');
+      if (badge) badge.classList.remove('hidden');
+    }
+
+    // Rebuild hidden inputs
+    if (batchContainer) {
+      batchContainer.innerHTML = '';
+      selectedBatchItemUrls.forEach(u => {
+        const inp = document.createElement('input');
+        inp.type = 'hidden';
+        inp.name = 'item_asset_urls';
+        inp.value = u;
+        batchContainer.appendChild(inp);
+      });
+    }
+    if (singleInput) singleInput.value = '';
+    updateTryonBatchCounter();
+  }
+}
+
+function updateTryonBatchCounter() {
+  const count = selectedBatchItemUrls.size;
+  const badge = document.getElementById('batch-tryon-counter');
+  if (badge) badge.innerText = `${count}/6`;
+  const submitBtn = document.getElementById('vto-submit-btn');
+  if (submitBtn && tryonSelectionMode === 'batch') {
+    submitBtn.innerHTML = `✨ Compare ${count} ${activeCategory.toUpperCase()} Item${count === 1 ? '' : 's'} in Parallel →`;
+  }
+}
+
+function filterGarments(subcat, btn) {
+  document.querySelectorAll('.cloth-filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+
+  let visibleCount = 0;
+  document.querySelectorAll('.garment-card').forEach(card => {
+    const meta = card.getAttribute('data-meta') || '';
+    if (subcat === 'all' || meta.includes(`"subcategory": "${subcat}"`)) {
+      card.style.display = 'block';
+      visibleCount++;
+    } else {
+      card.style.display = 'none';
+    }
+  });
+
+  const countPill = document.getElementById('catalog-count-pill');
+  if (countPill) countPill.innerText = `${visibleCount} items`;
+}
+
+function setVtoModelPreset(url, label) {
+  document.getElementById('preset-source-input').value = url;
+  const img = document.getElementById('model-preview-img');
+  img.src = url;
+  document.getElementById('model-upload-preview').classList.add('show');
+  document.getElementById('model-upload-placeholder').classList.add('hidden');
+}
+
+function previewModelFile(input) {
+  if (input.files && input.files[0]) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      document.getElementById('model-preview-img').src = e.target.result;
+      document.getElementById('model-upload-preview').classList.add('show');
+      document.getElementById('model-upload-placeholder').classList.add('hidden');
+      document.getElementById('preset-source-input').value = '';
+    };
+    reader.readAsDataURL(input.files[0]);
+  }
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', () => {
+  switchVtoCategory('cloth');
+});
+</script>
+
+<style>
+.vto-item-card {
+  position: relative;
+  cursor: pointer;
+  border: 2px solid var(--border-hairline);
+  border-radius: var(--r-md, 8px);
+  background: var(--bg-card, #ffffff);
+  padding: 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+  user-select: none;
+}
+
+.item-check-badge {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--accent-lime, #a3e635);
+  color: #000;
+  font-size: 0.75rem;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+.vto-item-card .vto-img-wrap {
+  width: 100%;
+  aspect-ratio: 3/4;
+  background: #f4f3f0;
+  border-radius: 6px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.vto-item-card .vto-img-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain !important;
+  padding: 4px;
+  transition: transform 0.2s ease;
+  display: block;
+}
+
+.vto-item-card:hover {
+  border-color: var(--border-mid, #d5d1c8);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+}
+
+.vto-item-card:hover .vto-img-wrap img {
+  transform: scale(1.05);
+}
+
+.vto-item-card.selected {
+  border-color: var(--accent-lime, #a3e635) !important;
+  box-shadow: 0 0 0 2px var(--accent-lime, #a3e635), 0 4px 14px rgba(163, 230, 53, 0.25) !important;
+  background: var(--bg-card, #ffffff);
+}
+
+.vto-item-card .vto-item-name {
+  font-size: 0.68rem;
+  font-weight: 500;
+  color: var(--ink, #1f1e1b);
+  padding: 4px 2px 2px;
+  text-align: center;
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+}
+
+.cloth-filter-btn.active {
+  background: var(--text-heading, #1f1e1b) !important;
+  color: var(--bg-cream, #fdfbf7) !important;
+}
+</style>
+{% endblock %}

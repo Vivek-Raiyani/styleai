@@ -1,0 +1,80 @@
+<div class="result-panel animate-fade-up">
+
+  <div class="score-hero mb-6" style="padding:var(--sp-6);">
+    <span class="eyebrow" style="justify-content:center; margin-bottom:var(--sp-2);">✦ Dual Transformation Complete</span>
+    <h2 class="serif" style="font-size:2.2rem; margin-bottom:var(--sp-2);">Your Complete AI Makeover</h2>
+    <p class="text-xs muted" style="max-width:560px; margin:0 auto var(--sp-5);">
+      Unified facial grooming synthesis & neural garment try-on tailored to your skin undertone.
+    </p>
+
+    <!-- Dual Transformation Grid -->
+    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:var(--sp-5); max-width:960px; margin:0 auto;">
+      
+      <!-- Card 1: Facial Grooming & Hair -->
+      <div class="card" style="padding:var(--sp-4); background:var(--bg-cream-soft); border:2px solid var(--border-hairline);">
+        <div class="flex justify-between items-center mb-3">
+          <h4 style="font-size:0.95rem; margin-bottom:0;">1. Facial Grooming & Hair</h4>
+          <span class="pill pill-lime text-xs">Selfie Transformation</span>
+        </div>
+        <div class="grid-2 gap-2 mb-3">
+          <div>
+            <div style="border-radius:var(--r-md); overflow:hidden; aspect-ratio:4/5; background:#eae5d7;">
+              <img src="{{ original_url }}" alt="Original Face" style="width:100%; height:100%; object-fit:cover;" />
+            </div>
+            <div class="text-xs muted text-center mt-1">Original Portrait</div>
+          </div>
+          <div>
+            <div style="border-radius:var(--r-md); overflow:hidden; aspect-ratio:4/5; background:#eae5d7; border:2px solid var(--accent-lime);">
+              <img src="{{ facial_makeover_url }}" alt="Styled Face" style="width:100%; height:100%; object-fit:cover;" />
+            </div>
+            <div class="text-xs text-center mt-1 font-bold" style="color:var(--ink);">Transformed Hair/Eyes</div>
+          </div>
+        </div>
+        <div class="harmony-tag text-center" style="font-size:0.72rem;">
+          ✨ Tailored {{ hair_color }} with Highlighting & Luster
+        </div>
+      </div>
+
+      <!-- Card 2: Wardrobe & Silhouette -->
+      {% if outfit_makeover_url and body_url %}
+      <div class="card" style="padding:var(--sp-4); background:var(--bg-cream-soft); border:2px solid var(--border-hairline);">
+        <div class="flex justify-between items-center mb-3">
+          <h4 style="font-size:0.95rem; margin-bottom:0;">2. Wardrobe & Fit</h4>
+          <span class="pill pill-terra text-xs">Neural Cloth-V4</span>
+        </div>
+        <div class="grid-2 gap-2 mb-3">
+          <div>
+            <div style="border-radius:var(--r-md); overflow:hidden; aspect-ratio:4/5; background:#eae5d7;">
+              <img src="{{ body_url }}" alt="Original Body" style="width:100%; height:100%; object-fit:cover;" />
+            </div>
+            <div class="text-xs muted text-center mt-1">Body Silhouette</div>
+          </div>
+          <div>
+            <div style="border-radius:var(--r-md); overflow:hidden; aspect-ratio:4/5; background:#eae5d7; border:2px solid var(--accent-terracotta);">
+              <img src="{{ outfit_makeover_url }}" alt="Virtual Try-On" style="width:100%; height:100%; object-fit:cover;" />
+            </div>
+            <div class="text-xs text-center mt-1 font-bold" style="color:var(--accent-terracotta);">Draped Neural Fit</div>
+          </div>
+        </div>
+        <div class="harmony-tag text-center" style="font-size:0.72rem;">
+          👗 Fabric Drape & Lighting Match
+        </div>
+      </div>
+      {% endif %}
+
+    </div>
+  </div>
+
+  <div class="flex gap-3 justify-center flex-wrap">
+    {% if outfit_makeover_url %}
+    <a href="{{ outfit_makeover_url }}" target="_blank" download="styleai-outfit.jpg" class="btn btn-primary btn-lg">
+      Download Outfit Fit <span class="arrow">↓</span>
+    </a>
+    {% endif %}
+    <a href="{{ facial_makeover_url }}" target="_blank" download="styleai-face.jpg" class="btn btn-dark btn-lg">
+      Download Facial Look <span class="arrow">↓</span>
+    </a>
+    <a href="/complete" class="btn btn-secondary btn-lg">Create Another Look</a>
+  </div>
+
+</div>

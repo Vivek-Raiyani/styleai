@@ -1,0 +1,19 @@
+<!-- Polling partial for Virtual Try-On Suite -->
+<div hx-get="/style/status/{{ task_id }}?result_id={{ result_id }}&tryon_type={{ tryon_type or 'cloth' }}"
+     hx-trigger="every 2s"
+     hx-target="#result-panel"
+     hx-swap="innerHTML">
+
+  <div class="spinner-wrap">
+    <div class="spinner-ring"></div>
+    <div class="spinner-label">
+      {% if tryon_type == 'shoes' %}Synthesizing Virtual Footwear Fit…
+      {% elif tryon_type == 'bag' %}Synthesizing Luxury Bag Drape…
+      {% elif tryon_type == 'necklace' %}Aligning 2D Necklace to Decolletage…
+      {% elif tryon_type == 'earring' %}Synthesizing Earring 2D Placement…
+      {% else %}Fitting garment to your body…{% endif %}
+    </div>
+    <div class="spinner-sub">Neural segmentation, lighting matching & depth alignment in progress</div>
+  </div>
+
+</div>

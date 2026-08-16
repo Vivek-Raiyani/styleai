@@ -1,0 +1,12 @@
+<div hx-get="/complete/step3/status/{{ task_id }}?result_id={{ result_id }}&selfie_url={{ selfie_url | urlencode }}&hair_output_url={{ hair_output_url | urlencode }}{% if body_url %}&body_url={{ body_url | urlencode }}{% endif %}{% if garment_url %}&garment_url={{ garment_url | urlencode }}{% endif %}&hair_color={{ hair_color | urlencode }}"
+     hx-trigger="every 2s"
+     hx-target="#result-panel"
+     hx-swap="innerHTML">
+
+  <div class="spinner-wrap">
+    <div class="spinner-ring"></div>
+    <div class="spinner-label">Step 3/4: Fitting Virtual Contact Lenses…</div>
+    <div class="spinner-sub">Applying realistic iris blend & lighting highlights</div>
+  </div>
+
+</div>

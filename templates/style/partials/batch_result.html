@@ -1,0 +1,51 @@
+<div class="result-panel animate-fade-up">
+
+  <div class="flex justify-between items-center mb-4 flex-wrap gap-2">
+    <div>
+      <span class="pill pill-lime mb-1">Batch Try-On Ready</span>
+      <h3 style="font-size:1.25rem; margin:0;">{{ tryon_type|title }} Try-On Comparison Matrix</h3>
+      <p class="muted text-xs">Compare all {{ items|length }} simulated items side-by-side on your model photo.</p>
+    </div>
+    <div class="flex gap-2">
+      <button type="button" class="btn btn-ghost-dark btn-xs" onclick="document.getElementById('result-panel').scrollIntoView({behavior:'smooth'})">Scroll to Top</button>
+    </div>
+  </div>
+
+  <!-- Multi-Card Comparison Grid -->
+  <div class="grid-2 gap-4 mb-5" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
+    {% for item in items %}
+    <div class="card tryon-result-card" id="tryon-card-{{ loop.index }}" style="padding:var(--sp-3); background:var(--bg-card); display:flex; flex-direction:column; gap:10px; border:2px solid var(--border-hairline); border-radius:var(--r-md); transition:all 0.2s ease;">
+      
+      <!-- Card Header -->
+      <div class="flex justify-between items-center">
+        <span style="font-size:0.85rem; font-weight:700; color:var(--text-heading); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="{{ item.item_name }}">{{ item.item_name }}</span>
+        <span class="pill pill-clay text-xs" style="font-size:0.65rem;">Item #{{ loop.index }}</span>
+      </div>
+
+      <!-- Image Display (Fitted Model Output) -->
+      <div style="position:relative; width:100%; aspect-ratio:3/4; border-radius:var(--r-sm); overflow:hidden; background:#111; box-shadow:0 4px 16px rgba(0,0,0,0.1);">
+        <img src="{{ item.output_url }}" alt="{{ item.item_name }}" style="width:100%; height:100%; object-fit:cover; display:block;" />
+        
+        <!-- Reference Product Thumbnail Overlay -->
+        <div style="position:absolute; bottom:8px; left:8px; width:48px; height:48px; border-radius:6px; overflow:hidden; border:2px solid #fff; box-shadow:0 2px 8px rgba(0,0,0,0.3); background:#f4f3f0; display:flex; align-items:center; justify-content:center;" title="Product Item">
+          <img src="{{ item.ref_url }}" alt="Item Ref" style="width:100%; height:100%; object-fit:contain;" />
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="flex gap-2">
+        <a href="{{ item.output_url }}" target="_blank" download="tryon-{{ item.tryon_type }}-{{ loop.index }}.jpg" class="btn btn-secondary btn-xs flex-1">
+          ⬇️ Download Photo
+        </a>
+      </div>
+
+    </div>
+    {% endfor %}
+  </div>
+
+  <div class="flex gap-3 justify-center flex-wrap">
+    <a href="/brand" class="btn btn-primary">Brand Studio Matrix <span class="arrow">→</span></a>
+    <a href="/history" class="btn btn-secondary">View Run History <span class="arrow">→</span></a>
+  </div>
+
+</div>
