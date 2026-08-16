@@ -47,5 +47,6 @@ Thumbs.db
 *.log
 scratch/
 
-# json files
+# json files (allow catalog seed files)
 *.json
+!*_data.json

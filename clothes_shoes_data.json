@@ -1,0 +1,583 @@
+[
+  {
+    "category": "garment",
+    "subcategory": "full_body",
+    "name": "Full Body Look #1",
+    "tag": "full-1",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/small_clothes_reference_full_body_01_8190f45a28.png"
+  },
+  {
+    "category": "garment",
+    "subcategory": "full_body",
+    "name": "Full Body Look #2",
+    "tag": "full-2",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/small_clothes_reference_full_body_02_e8b9d78f2e.png"
+  },
+  {
+    "category": "garment",
+    "subcategory": "full_body",
+    "name": "Full Body Look #3",
+    "tag": "full-3",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/small_clothes_reference_full_body_03_e005cc9acb.png"
+  },
+  {
+    "category": "garment",
+    "subcategory": "full_body",
+    "name": "Full Body Look #4",
+    "tag": "full-4",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/small_clothes_reference_full_body_04_5c8ecc3df0.png"
+  },
+  {
+    "category": "garment",
+    "subcategory": "full_body",
+    "name": "Full Body Look #5",
+    "tag": "full-5",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/small_clothes_reference_full_body_05_6364e97f94.png"
+  },
+  {
+    "category": "garment",
+    "subcategory": "full_body",
+    "name": "Full Body Look #6",
+    "tag": "full-6",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/small_clothes_reference_full_body_06_ec697568e1.png"
+  },
+  {
+    "category": "garment",
+    "subcategory": "full_body",
+    "name": "Full Body Look #7",
+    "tag": "full-7",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/small_clothes_reference_full_body_07_a2ac0b93ad.png"
+  },
+  {
+    "category": "garment",
+    "subcategory": "full_body",
+    "name": "Full Body Look #8",
+    "tag": "full-8",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/small_clothes_reference_full_body_08_9f31d68329.png"
+  },
+  {
+    "category": "garment",
+    "subcategory": "full_body",
+    "name": "Full Body Look #9",
+    "tag": "full-9",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/small_clothes_reference_full_body_09_e7651cae37.png"
+  },
+  {
+    "category": "garment",
+    "subcategory": "full_body",
+    "name": "Full Body Look #10",
+    "tag": "full-10",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/small_clothes_reference_full_body_10_48704b9df2.png"
+  },
+  {
+    "category": "garment",
+    "subcategory": "full_body",
+    "name": "Full Body Look #11",
+    "tag": "full-11",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/small_clothes_reference_full_body_11_98ce881608.png"
+  },
+  {
+    "category": "garment",
+    "subcategory": "full_body",
+    "name": "Full Body Look #12",
+    "tag": "full-12",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/small_clothes_reference_full_body_12_ce6b132d80.png"
+  },
+  {
+    "category": "garment",
+    "subcategory": "full_body",
+    "name": "Full Body Look #13",
+    "tag": "full-13",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/small_clothes_reference_full_body_13_c8c9f79e6d.png"
+  },
+  {
+    "category": "garment",
+    "subcategory": "full_body",
+    "name": "Full Body Look #14",
+    "tag": "full-14",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/small_clothes_reference_full_body_14_cd720380cc.png"
+  },
+  {
+    "category": "garment",
+    "subcategory": "full_body",
+    "name": "Full Body Look #15",
+    "tag": "full-15",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/small_clothes_reference_full_body_15_8dec5bad7a.png"
+  },
+  {
+    "category": "garment",
+    "subcategory": "full_body",
+    "name": "Full Body Look #16",
+    "tag": "full-16",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/small_clothes_reference_full_body_16_8dd8b721f0.png"
+  },
+  {
+    "category": "garment",
+    "subcategory": "full_body",
+    "name": "Full Body Look #17",
+    "tag": "full-17",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/small_clothes_reference_full_body_17_49ffb2a8a0.png"
+  },
+  {
+    "category": "garment",
+    "subcategory": "full_body",
+    "name": "Full Body Look #18",
+    "tag": "full-18",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/small_clothes_reference_full_body_18_0642209a4f.png"
+  },
+  {
+    "category": "garment",
+    "subcategory": "full_body",
+    "name": "Full Body Look #19",
+    "tag": "full-19",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/small_clothes_reference_full_body_19_613e13a00d.png"
+  },
+  {
+    "category": "garment",
+    "subcategory": "full_body",
+    "name": "Full Body Look #20",
+    "tag": "full-20",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/small_clothes_reference_full_body_20_d38d8dc4eb.png"
+  },
+  {
+    "category": "garment",
+    "subcategory": "full_body",
+    "name": "Full Body Look #21",
+    "tag": "full-21",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/small_clothes_reference_full_body_21_453ae368d5.png"
+  },
+  {
+    "category": "garment",
+    "subcategory": "full_body",
+    "name": "Full Body Look #22",
+    "tag": "full-22",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/small_clothes_reference_full_body_22_a00378ed61.png"
+  },
+  {
+    "category": "garment",
+    "subcategory": "full_body",
+    "name": "Full Body Look #23",
+    "tag": "full-23",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/small_clothes_reference_full_body_23_4d21665b9e.png"
+  },
+  {
+    "category": "garment",
+    "subcategory": "full_body",
+    "name": "Full Body Look #24",
+    "tag": "full-24",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/small_clothes_reference_full_body_24_a2e77d6cb8.png"
+  },
+  {
+    "category": "garment",
+    "subcategory": "full_body",
+    "name": "Full Body Look #25",
+    "tag": "full-25",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/small_clothes_reference_full_body_25_742b310ad2.png"
+  },
+  {
+    "category": "garment",
+    "subcategory": "full_body",
+    "name": "Full Body Look #26",
+    "tag": "full-26",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/small_clothes_reference_full_body_26_3b6cb3fa7e.png"
+  },
+  {
+    "category": "garment",
+    "subcategory": "full_body",
+    "name": "Full Body Look #27",
+    "tag": "full-27",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/small_clothes_reference_full_body_27_d2c3010327.png"
+  },
+  {
+    "category": "garment",
+    "subcategory": "full_body",
+    "name": "Full Body Look #28",
+    "tag": "full-28",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/small_clothes_reference_full_body_28_e18605bd43.png"
+  },
+  {
+    "category": "garment",
+    "subcategory": "full_body",
+    "name": "Full Body Look #29",
+    "tag": "full-29",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/small_clothes_reference_full_body_29_153b8644d8.png"
+  },
+  {
+    "category": "garment",
+    "subcategory": "full_body",
+    "name": "Full Body Look #30",
+    "tag": "full-30",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/small_clothes_reference_full_body_30_69c4bb8d88.png"
+  },
+  {
+    "category": "garment",
+    "subcategory": "full_body",
+    "name": "Full Body Look #31",
+    "tag": "full-31",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/small_clothes_reference_full_body_31_5d0d21c71e.png"
+  },
+  {
+    "category": "garment",
+    "subcategory": "full_body",
+    "name": "Full Body Look #32",
+    "tag": "full-32",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/small_clothes_reference_full_body_32_7374a3091d.png"
+  },
+  {
+    "category": "garment",
+    "subcategory": "full_body",
+    "name": "Full Body Look #33",
+    "tag": "full-33",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/small_clothes_reference_full_body_33_4e08d9218c.png"
+  },
+  {
+    "category": "garment",
+    "subcategory": "full_body",
+    "name": "Full Body Look #34",
+    "tag": "full-34",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/small_clothes_reference_full_body_34_56d1792a86.png"
+  },
+  {
+    "category": "garment",
+    "subcategory": "full_body",
+    "name": "Full Body Look #35",
+    "tag": "full-35",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/small_clothes_reference_full_body_35_fc5fa4f1f4.png"
+  },
+  {
+    "category": "garment",
+    "subcategory": "full_body",
+    "name": "Full Body Look #36",
+    "tag": "full-36",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/small_clothes_reference_full_body_36_08912fb5e2.png"
+  },
+  {
+    "category": "garment",
+    "subcategory": "full_body",
+    "name": "Full Body Look #37",
+    "tag": "full-37",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/small_clothes_reference_full_body_37_c13b242971.png"
+  },
+  {
+    "category": "garment",
+    "subcategory": "full_body",
+    "name": "Full Body Look #38",
+    "tag": "full-38",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/small_clothes_reference_full_body_38_f3ed50e52f.png"
+  },
+  {
+    "category": "garment",
+    "subcategory": "full_body",
+    "name": "Full Body Look #39",
+    "tag": "full-39",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/small_clothes_reference_full_body_39_b4544b575a.png"
+  },
+  {
+    "category": "garment",
+    "subcategory": "full_body",
+    "name": "Full Body Look #40",
+    "tag": "full-40",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/small_clothes_reference_full_body_40_d716f5f2a7.png"
+  },
+  {
+    "category": "garment",
+    "subcategory": "upper_body",
+    "name": "Top / Upper Wear #1",
+    "tag": "upper-1",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/small_clothes_reference_upper_body_01_3f376bb653.png"
+  },
+  {
+    "category": "garment",
+    "subcategory": "upper_body",
+    "name": "Top / Upper Wear #2",
+    "tag": "upper-2",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/small_clothes_reference_upper_body_02_f9c20f7e80.png"
+  },
+  {
+    "category": "garment",
+    "subcategory": "upper_body",
+    "name": "Top / Upper Wear #3",
+    "tag": "upper-3",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/small_clothes_reference_upper_body_03_cc0c9bf1db.png"
+  },
+  {
+    "category": "garment",
+    "subcategory": "upper_body",
+    "name": "Top / Upper Wear #4",
+    "tag": "upper-4",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/small_clothes_reference_upper_body_04_64349d9760.png"
+  },
+  {
+    "category": "garment",
+    "subcategory": "upper_body",
+    "name": "Top / Upper Wear #5",
+    "tag": "upper-5",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/small_clothes_reference_upper_body_05_e905b83463.png"
+  },
+  {
+    "category": "garment",
+    "subcategory": "upper_body",
+    "name": "Top / Upper Wear #6",
+    "tag": "upper-6",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/small_clothes_reference_upper_body_06_787acd17ec.png"
+  },
+  {
+    "category": "garment",
+    "subcategory": "upper_body",
+    "name": "Top / Upper Wear #7",
+    "tag": "upper-7",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/small_clothes_reference_upper_body_07_3aeec0bfe1.png"
+  },
+  {
+    "category": "garment",
+    "subcategory": "upper_body",
+    "name": "Top / Upper Wear #8",
+    "tag": "upper-8",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/small_clothes_reference_upper_body_08_9d61de1dca.png"
+  },
+  {
+    "category": "garment",
+    "subcategory": "upper_body",
+    "name": "Top / Upper Wear #9",
+    "tag": "upper-9",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/small_clothes_reference_upper_body_09_35850fad6c.png"
+  },
+  {
+    "category": "garment",
+    "subcategory": "upper_body",
+    "name": "Top / Upper Wear #10",
+    "tag": "upper-10",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/small_clothes_reference_upper_body_10_bac2b8bf8a.png"
+  },
+  {
+    "category": "garment",
+    "subcategory": "lower_body",
+    "name": "Bottom / Lower Wear #1",
+    "tag": "lower-1",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/small_clothes_reference_lower_body_01_6a2df013ca.png"
+  },
+  {
+    "category": "garment",
+    "subcategory": "lower_body",
+    "name": "Bottom / Lower Wear #2",
+    "tag": "lower-2",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/small_clothes_reference_lower_body_02_f3cbaace57.png"
+  },
+  {
+    "category": "garment",
+    "subcategory": "lower_body",
+    "name": "Bottom / Lower Wear #3",
+    "tag": "lower-3",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/small_clothes_reference_lower_body_03_cdd60e1ac5.png"
+  },
+  {
+    "category": "garment",
+    "subcategory": "lower_body",
+    "name": "Bottom / Lower Wear #4",
+    "tag": "lower-4",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/small_clothes_reference_lower_body_04_cbbaf1e819.png"
+  },
+  {
+    "category": "garment",
+    "subcategory": "lower_body",
+    "name": "Bottom / Lower Wear #5",
+    "tag": "lower-5",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/small_clothes_reference_lower_body_05_818b5ffd33.png"
+  },
+  {
+    "category": "garment",
+    "subcategory": "lower_body",
+    "name": "Bottom / Lower Wear #6",
+    "tag": "lower-6",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/small_clothes_reference_lower_body_06_d978e1e4a6.png"
+  },
+  {
+    "category": "garment",
+    "subcategory": "lower_body",
+    "name": "Bottom / Lower Wear #7",
+    "tag": "lower-7",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/small_clothes_reference_lower_body_07_5fb47ca5e9.png"
+  },
+  {
+    "category": "garment",
+    "subcategory": "lower_body",
+    "name": "Bottom / Lower Wear #8",
+    "tag": "lower-8",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/small_clothes_reference_lower_body_08_fc19f59031.png"
+  },
+  {
+    "category": "garment",
+    "subcategory": "lower_body",
+    "name": "Bottom / Lower Wear #9",
+    "tag": "lower-9",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/small_clothes_reference_lower_body_09_4b033d11d0.png"
+  },
+  {
+    "category": "garment",
+    "subcategory": "lower_body",
+    "name": "Bottom / Lower Wear #10",
+    "tag": "lower-10",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/small_clothes_reference_lower_body_10_4de90f9e50.png"
+  },
+  {
+    "category": "garment",
+    "subcategory": "outerwear",
+    "name": "Outerwear / Coat #1",
+    "tag": "outer-1",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/small_webp_outerwear_02_f08cb507ce.png"
+  },
+  {
+    "category": "garment",
+    "subcategory": "outerwear",
+    "name": "Outerwear / Coat #2",
+    "tag": "outer-2",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/small_webp_outerwear_016_364e8d57e5.png"
+  },
+  {
+    "category": "garment",
+    "subcategory": "outerwear",
+    "name": "Outerwear / Coat #3",
+    "tag": "outer-3",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/small_webp_outerwear_017_3a7edfc3cc.png"
+  },
+  {
+    "category": "garment",
+    "subcategory": "outerwear",
+    "name": "Outerwear / Coat #4",
+    "tag": "outer-4",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/small_webp_outerwear_024_6e5385d975.png"
+  },
+  {
+    "category": "garment",
+    "subcategory": "outerwear",
+    "name": "Outerwear / Coat #5",
+    "tag": "outer-5",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/small_webp_outerwear_03_36e0f671a8.png"
+  },
+  {
+    "category": "garment",
+    "subcategory": "outerwear",
+    "name": "Outerwear / Coat #6",
+    "tag": "outer-6",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/small_webp_outerwear_01_54a065a6c0.png"
+  },
+  {
+    "category": "garment",
+    "subcategory": "outerwear",
+    "name": "Outerwear / Coat #7",
+    "tag": "outer-7",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/small_webp_outerwear_025_3dc8212248.png"
+  },
+  {
+    "category": "garment",
+    "subcategory": "outerwear",
+    "name": "Outerwear / Coat #8",
+    "tag": "outer-8",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/small_webp_outerwear_013_03cc287218.png"
+  },
+  {
+    "category": "garment",
+    "subcategory": "outerwear",
+    "name": "Outerwear / Coat #9",
+    "tag": "outer-9",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/small_webp_outerwear_022_575c843a5c.png"
+  },
+  {
+    "category": "garment",
+    "subcategory": "outerwear",
+    "name": "Outerwear / Coat #10",
+    "tag": "outer-10",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/small_webp_outerwear_012_3eb7bd17cc.png"
+  },
+  {
+    "category": "garment",
+    "subcategory": "outerwear",
+    "name": "Outerwear / Coat #11",
+    "tag": "outer-11",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/small_webp_outerwear_07_e005c701b4.png"
+  },
+  {
+    "category": "garment",
+    "subcategory": "outerwear",
+    "name": "Outerwear / Coat #12",
+    "tag": "outer-12",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/small_webp_outerwear_09_61a0d70ea1.png"
+  },
+  {
+    "category": "garment",
+    "subcategory": "outerwear",
+    "name": "Outerwear / Coat #13",
+    "tag": "outer-13",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/small_webp_outerwear_010_a7af0d06cc.png"
+  },
+  {
+    "category": "shoes",
+    "subcategory": "shoes",
+    "name": "Footwear Pair #1",
+    "tag": "shoes-1",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/small_Shoes_1_b2f3397ee0.jpg"
+  },
+  {
+    "category": "shoes",
+    "subcategory": "shoes",
+    "name": "Footwear Pair #2",
+    "tag": "shoes-2",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/small_Shoes_2_ec3578c5c2.jpg"
+  },
+  {
+    "category": "shoes",
+    "subcategory": "shoes",
+    "name": "Footwear Pair #3",
+    "tag": "shoes-3",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/small_Shoes_3_428e8dddb1.jpg"
+  },
+  {
+    "category": "shoes",
+    "subcategory": "shoes",
+    "name": "Footwear Pair #4",
+    "tag": "shoes-4",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/small_Shoes_4_c30f27f548.jpg"
+  },
+  {
+    "category": "shoes",
+    "subcategory": "shoes",
+    "name": "Footwear Pair #5",
+    "tag": "shoes-5",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/small_Shoes_5_c3520502dc.jpg"
+  },
+  {
+    "category": "shoes",
+    "subcategory": "shoes",
+    "name": "Footwear Pair #6",
+    "tag": "shoes-6",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/small_Shoes_6_a8a634f576.jpg"
+  },
+  {
+    "category": "shoes",
+    "subcategory": "shoes",
+    "name": "Footwear Pair #7",
+    "tag": "shoes-7",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/small_Shoes_7_feae35a15c.jpg"
+  },
+  {
+    "category": "shoes",
+    "subcategory": "shoes",
+    "name": "Footwear Pair #8",
+    "tag": "shoes-8",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/small_Shoes_8_343dceaf61.jpg"
+  },
+  {
+    "category": "shoes",
+    "subcategory": "shoes",
+    "name": "Footwear Pair #9",
+    "tag": "shoes-9",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/small_Shoes_9_52a61e0935.jpg"
+  },
+  {
+    "category": "shoes",
+    "subcategory": "shoes",
+    "name": "Footwear Pair #10",
+    "tag": "shoes-10",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/small_Shoes_10_d67d107868.jpg"
+  }
+]

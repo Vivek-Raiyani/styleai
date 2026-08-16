@@ -1,0 +1,72 @@
+[
+  {
+    "id_num": 1,
+    "name": "Diamond Solitaire Pendant",
+    "tag": "necklace-1",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/small_necklace_product_01_124206cfbe.png",
+    "category": "necklace"
+  },
+  {
+    "id_num": 2,
+    "name": "Classic Pearl Choker",
+    "tag": "necklace-2",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/small_necklace_product_02_d3c1f00fb3.png",
+    "category": "necklace"
+  },
+  {
+    "id_num": 3,
+    "name": "Layered Gold Chain",
+    "tag": "necklace-3",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/small_necklace_product_03_c1e5aa5544.png",
+    "category": "necklace"
+  },
+  {
+    "id_num": 4,
+    "name": "Emerald Teardrop Necklace",
+    "tag": "necklace-4",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/small_necklace_product_04_af8019c120.png",
+    "category": "necklace"
+  },
+  {
+    "id_num": 5,
+    "name": "Modern Geometric Collar",
+    "tag": "necklace-5",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/small_necklace_product_05_6c50ea5f44.png",
+    "category": "necklace"
+  },
+  {
+    "id_num": 6,
+    "name": "Rose Gold Heart Locket",
+    "tag": "necklace-6",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/small_necklace_product_06_661e26e298.png",
+    "category": "necklace"
+  },
+  {
+    "id_num": 7,
+    "name": "Sapphire Halo Pendant",
+    "tag": "necklace-7",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/small_necklace_product_07_a9228aeed0.png",
+    "category": "necklace"
+  },
+  {
+    "id_num": 8,
+    "name": "Vintage Filigree Chain",
+    "tag": "necklace-8",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/small_necklace_product_08_0e12d140a9.png",
+    "category": "necklace"
+  },
+  {
+    "id_num": 9,
+    "name": "Minimalist Bar Necklace",
+    "tag": "necklace-9",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/small_necklace_product_09_cc8e107d00.png",
+    "category": "necklace"
+  },
+  {
+    "id_num": 10,
+    "name": "Pavé Crystal Statement Piece",
+    "tag": "necklace-10",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/small_necklace_product_10_9de7c70ccb.png",
+    "category": "necklace"
+  }
+]

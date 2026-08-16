@@ -1,0 +1,72 @@
+[
+  {
+    "id_num": 1,
+    "name": "Pavé Diamond Huggies",
+    "tag": "earring-1",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/small_earring_product_01_41c943f9fc.png",
+    "category": "earring"
+  },
+  {
+    "id_num": 2,
+    "name": "Classic Pearl Studs",
+    "tag": "earring-2",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/small_earring_product_02_b38dc58c4a.png",
+    "category": "earring"
+  },
+  {
+    "id_num": 3,
+    "name": "Emerald Drop Earrings",
+    "tag": "earring-3",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/small_earring_product_03_f46ee285fc.png",
+    "category": "earring"
+  },
+  {
+    "id_num": 4,
+    "name": "Modern Gold Hoops",
+    "tag": "earring-4",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/small_earring_product_04_494990c913.png",
+    "category": "earring"
+  },
+  {
+    "id_num": 5,
+    "name": "Sapphire Crystal Cascades",
+    "tag": "earring-5",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/small_earring_product_05_76fa37da3c.png",
+    "category": "earring"
+  },
+  {
+    "id_num": 6,
+    "name": "Rose Gold Teardrops",
+    "tag": "earring-6",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/small_earring_product_06_f258e4765b.png",
+    "category": "earring"
+  },
+  {
+    "id_num": 7,
+    "name": "Chic Geometric Dangles",
+    "tag": "earring-7",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/small_earring_product_07_5476e0a156.png",
+    "category": "earring"
+  },
+  {
+    "id_num": 8,
+    "name": "Vintage Chandelier Drops",
+    "tag": "earring-8",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/small_earring_product_08_342281c7f1.png",
+    "category": "earring"
+  },
+  {
+    "id_num": 9,
+    "name": "Minimalist Bar Studs",
+    "tag": "earring-9",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/small_earring_product_09_52ac60c037.png",
+    "category": "earring"
+  },
+  {
+    "id_num": 10,
+    "name": "Solitaire Diamond Studs",
+    "tag": "earring-10",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/small_earring_product_10_308996c245.png",
+    "category": "earring"
+  }
+]

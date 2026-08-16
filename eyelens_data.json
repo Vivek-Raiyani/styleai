@@ -1,0 +1,62 @@
+[
+  {
+    "id_num": 1,
+    "name": "Lens 01 — Hazel Amber",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/webp_eye_len_01_788c0418fe.png",
+    "tone": "Warm Amber"
+  },
+  {
+    "id_num": 2,
+    "name": "Lens 02 — Honey Gold",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/webp_eye_len_02_923bbe3775.png",
+    "tone": "Honey Gold"
+  },
+  {
+    "id_num": 3,
+    "name": "Lens 03 — Mystic Gray",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/webp_eye_len_03_37e6555083.png",
+    "tone": "Cool Slate"
+  },
+  {
+    "id_num": 4,
+    "name": "Lens 04 — Aqua Blue",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/webp_eye_len_04_2b844f6473.png",
+    "tone": "Vibrant Aqua"
+  },
+  {
+    "id_num": 5,
+    "name": "Lens 05 — Emerald Crystal",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/webp_eye_len_05_a2cb4f207a.png",
+    "tone": "Emerald Green"
+  },
+  {
+    "id_num": 6,
+    "name": "Lens 06 — Sapphire Sparkle",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/webp_eye_len_06_a6bc280531.png",
+    "tone": "Deep Sapphire"
+  },
+  {
+    "id_num": 7,
+    "name": "Lens 07 — Deep Violet",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/webp_eye_len_07_7f51dcb1c4.png",
+    "tone": "Amethyst Violet"
+  },
+  {
+    "id_num": 8,
+    "name": "Lens 08 — Smoky Quartz",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/webp_eye_len_08_ba64f9a483.png",
+    "tone": "Smoky Quartz"
+  },
+  {
+    "id_num": 9,
+    "name": "Lens 09 — Olive Green",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/webp_eye_len_09_2fca0cf739.png",
+    "tone": "Natural Olive"
+  },
+  {
+    "id_num": 10,
+    "name": "Lens 10 — Platinum Iris",
+    "url": "https://plugins-media.makeupar.com/strapi/assets/webp_eye_len_10_3015d30b1c.png",
+    "tone": "Platinum Silver"
+  }
+]
