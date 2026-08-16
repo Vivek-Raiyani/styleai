@@ -23,23 +23,27 @@ def render(request, template_name: str, db: Session, active_nav: str = "", **ctx
     current_user   = get_current_user(request, db)
     flash_messages = pop_flash(request)
 
-    return templates.TemplateResponse(template_name, {
-        "request":        request,
-        "current_user":   current_user,
-        "flash_messages": flash_messages,
-        "active_nav":     active_nav,
-        **ctx,
-    })
+    return templates.TemplateResponse(
+        request=request,
+        name=template_name,
+        context={
+            "current_user":   current_user,
+            "flash_messages": flash_messages,
+            "active_nav":     active_nav,
+            **ctx,
+        },
+    )
 
 
 def render_partial(request, template_name: str, **ctx):
     """
     Render a partial template (no common context needed — used in HTMX swaps).
     """
-    return templates.TemplateResponse(template_name, {
-        "request": request,
-        **ctx,
-    })
+    return templates.TemplateResponse(
+        request=request,
+        name=template_name,
+        context=ctx,
+    )
 
 
 def format_api_error(err: str) -> str:
